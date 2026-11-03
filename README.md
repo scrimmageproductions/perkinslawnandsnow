@@ -38,17 +38,26 @@ On the host, set the three `VITE_EMAILJS_*` variables as environment variables.
 
 If the keys are missing, the form runs in **demo mode**. It still shows the loading and success states, but no email is sent.
 
-## Replacing placeholder images
+## Photos
 
-Each image is a `<PlaceholderImage>` with a text label (for example "Dump Truck" or "Snow Plowing").
-To use a real photo, pass `src`:
+Real photos live in `public/images/`:
 
-```jsx
-<PlaceholderImage src="/images/dump-truck.jpg" label="Dump Truck" ... />
-```
+| File | Used in |
+| --- | --- |
+| `perkins-truck.jpg` | About section |
+| `fall-cleanup-before-after.jpg` | Gallery (with Before/After tags) |
+| `mulch-commercial-shrubs.jpg` | Gallery |
+| `mulch-residential-deck.jpg` | Gallery + "Spring cleanup" Facebook post |
+| `mulch-parking-lot-island.jpg` | Gallery |
 
-Put the photos in `public/images/`. For gallery items, add a `src` field to the `GALLERY` array and pass it through to the component.
-To remove the text overlay on real photos, delete the label `<div>` in `PlaceholderImage`.
+These spots still show labelled placeholders: the hero background, the
+"Snow Plowing" and "Skid Loader" gallery tiles, the "Cleared Driveway"
+Facebook post, and the map tile in Contact.
+
+To fill one, drop the photo in `public/images/` and set its `src`
+(for gallery items, the `src` field in the `GALLERY` array; for Facebook
+posts, `image` in `FACEBOOK_POSTS`). Images with a `src` hide the text label.
+The hero needs a wide, high-resolution photo (at least 1600px across).
 
 ## Reviews & Facebook feed
 

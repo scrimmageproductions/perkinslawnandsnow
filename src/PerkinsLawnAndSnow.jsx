@@ -119,13 +119,32 @@ const SERVICES = [
 const EXTRA_SERVICES =
   "Bush & shrub trimming, skid loader work, grading, light excavating, hauling, trucking, house cleanouts, storage cleanouts, and more.";
 
+// Real project photos live in /public/images. Items without `src` show a
+// labelled placeholder until the client supplies a photo.
 const GALLERY = [
-  { label: "Lawn Care", caption: "Freshly striped residential lawn" },
+  {
+    label: "Fall Cleanup — Before & After",
+    caption: "Fall leaf cleanup: before & after",
+    src: "/images/fall-cleanup-before-after.jpg",
+    beforeAfter: true,
+  },
+  {
+    label: "Commercial Mulch & Shrub Trimming",
+    caption: "Fresh mulch & trimmed shrubs at a commercial property",
+    src: "/images/mulch-commercial-shrubs.jpg",
+  },
+  {
+    label: "Residential Black Mulch Beds",
+    caption: "Black mulch beds with clean stone borders",
+    src: "/images/mulch-residential-deck.jpg",
+  },
+  {
+    label: "Parking Lot Island Mulch",
+    caption: "Parking lot island refreshed with new mulch",
+    src: "/images/mulch-parking-lot-island.jpg",
+  },
   { label: "Snow Plowing", caption: "Commercial lot cleared overnight" },
-  { label: "Dump Truck", caption: "Aggregate delivery on the way" },
-  { label: "Mulch Install", caption: "Landscape beds refreshed" },
   { label: "Skid Loader", caption: "Grading & light excavating" },
-  { label: "Pressure Washing", caption: "Driveway restored to like-new" },
 ];
 
 const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=100062919445046";
@@ -153,20 +172,22 @@ const FACEBOOK_POSTS = [
   {
     text: "Spring cleanup in full swing! 🌱 Check out the sharp edges and fresh mulch on this property. We love transforming a winter-weary yard into a pristine outdoor space. Quality work is always our top priority.",
     imageLabel: "Facebook Post — Spring Cleanup",
-    image: null,
+    image: "/images/mulch-residential-deck.jpg",
   },
 ];
 
 /* --------------------------- Helpers ------------------------------- */
 
 /**
- * Image placeholder with a text overlay. Swap `src` for a real photo
- * (e.g. "/images/dump-truck.jpg") when the client provides gallery assets.
- * If the placeholder endpoint is unavailable, a branded gradient is shown.
+ * Image with a placeholder fallback. Without `src` it loads
+ * /api/placeholder/W/H and shows a text label so the client knows what
+ * photo belongs there. With `src` (a real photo) the label is hidden.
+ * If an image fails to load, a branded gradient is shown instead.
  */
 function PlaceholderImage({ width, height, label, className = "", src, labelClassName = "items-center justify-center" }) {
   const [failed, setFailed] = useState(false);
   const url = src || `/api/placeholder/${width}/${height}`;
+  const showLabel = !src || failed;
   return (
     <div
       className={`${
@@ -185,11 +206,13 @@ function PlaceholderImage({ width, height, label, className = "", src, labelClas
       {failed && (
         <div className="absolute inset-0 bg-gradient-to-br from-green-800 via-slate-700 to-zinc-900" />
       )}
-      <div className={`absolute inset-0 flex bg-zinc-900/40 ${labelClassName}`}>
-        <span className="rounded-md border border-white/40 bg-zinc-900/60 px-4 py-2 text-sm font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
-          {label}
-        </span>
-      </div>
+      {showLabel && (
+        <div className={`absolute inset-0 flex bg-zinc-900/40 ${labelClassName}`}>
+          <span className="rounded-md border border-white/40 bg-zinc-900/60 px-4 py-2 text-center text-sm font-semibold uppercase tracking-widest text-white backdrop-blur-sm">
+            {label}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -371,12 +394,13 @@ function About() {
   return (
     <section id="about" className="bg-white py-24">
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
-        <div className="relative">
+        <div className="relative mx-auto w-full max-w-lg">
           <PlaceholderImage
-            width={800}
+            width={600}
             height={600}
-            label="Jason & Shannon Perkins"
-            className="aspect-[4/3] rounded-2xl shadow-xl"
+            label="Perkins Lawn and Snow work truck"
+            src="/images/perkins-truck.jpg"
+            className="aspect-square rounded-2xl shadow-xl"
           />
           <div className="absolute -bottom-6 -right-4 hidden rounded-xl bg-green-800 px-6 py-5 text-white shadow-lg sm:block">
             <p className="text-3xl font-extrabold">20+</p>
@@ -472,17 +496,30 @@ function Gallery() {
           subtitle="A look at recent jobs and the equipment that gets them done."
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {GALLERY.map(({ label, caption }) => (
+          {GALLERY.map(({ label, caption, src, beforeAfter }) => (
             <figure
               key={label}
               className="group overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-slate-200"
             >
-              <PlaceholderImage
-                width={600}
-                height={450}
-                label={label}
-                className="aspect-[4/3] transition-transform duration-500 group-hover:scale-105"
-              />
+              <div className="relative overflow-hidden">
+                <PlaceholderImage
+                  width={600}
+                  height={600}
+                  label={label}
+                  src={src}
+                  className="aspect-square transition-transform duration-500 group-hover:scale-105"
+                />
+                {beforeAfter && (
+                  <>
+                    <span className="absolute left-3 top-3 rounded-md bg-zinc-900/75 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                      Before
+                    </span>
+                    <span className="absolute left-3 top-1/2 mt-3 rounded-md bg-green-800 px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                      After
+                    </span>
+                  </>
+                )}
+              </div>
               <figcaption className="px-5 py-4 text-sm font-medium text-slate-700">
                 {caption}
               </figcaption>
