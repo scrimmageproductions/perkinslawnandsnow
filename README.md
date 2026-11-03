@@ -38,41 +38,28 @@ On the host, set the three `VITE_EMAILJS_*` variables as environment variables.
 
 If the keys are missing, the form runs in **demo mode**. It still shows the loading and success states, but no email is sent.
 
-## Photos
+## Editing photos and content
 
-Real photos live in `public/images/`:
+Everything editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:
 
-| File | Used in |
+| Array | Controls |
 | --- | --- |
-| `perkins-logo.avif` | Header logo |
-| `hero-lawn-mowing.avif` | Hero background |
-| `perkins-truck-logo.avif` | About section |
-| `fall-cleanup-before-after.jpg` | Gallery (with Before/After tags) |
-| `mulch-commercial-shrubs.jpg` | Gallery |
-| `mulch-residential-deck.jpg` | Gallery + "Spring cleanup" Facebook post |
-| `mulch-parking-lot-island.jpg` | Gallery |
-| `snow-clearing-lot.avif` | Gallery + "Cleared driveway" Facebook post |
-| `trimming-edging.avif` | Gallery |
-| `concrete-walkway-steps.jpg` | Concrete Services card + Gallery |
-| `mulch-pile-wheelbarrow.jpg` | Mulch Services card |
-| `pressure-washing-pavers.jpg` | Pressure Washing card + Gallery |
-| `snow-plow-cab-view.jpg` | Snow Removal card |
-| `landscape-fabric-planting.jpg` | Gallery |
+| `heroImage` | Hero background |
+| `aboutImage` | About section photo |
+| `services` | Service cards (title, description, photo) |
+| `galleryImages` | "Our Work" grid; keep the count a multiple of 3 |
+| `facebookPosts` | "Recent Updates" cards (`src: null` for text-only) |
+| `googleReviews` | Review quotes |
 
-Service cards take an `image` (and optional `imagePosition`) in the
-`SERVICES` array. Junk Removal, Fertilization Programs and Aggregate
-Delivery still show labelled placeholders.
+Set any `src` to a file in `public/images/` (e.g. `"/images/new-photo.jpg"`)
+or to `"/api/placeholder/W/H"`. If a local file is missing, or the component
+is pasted into a Claude Artifact, images fall back to `/api/placeholder`
+automatically, then to a plain grey block.
+`position` is the CSS object-position used when a photo is cropped.
 
-The map tile in the Contact section is also still a placeholder.
-Wide photos are cropped with `position` (CSS object-position) so the
-subject stays in frame; adjust it per image if needed.
+Three service cards use stand-in photos until real ones are available
+(marked `stand-in photo` in the code): Junk Removal, Fertilization Programs
+and Aggregate Delivery.
 
-To fill one, drop the photo in `public/images/` and set its `src`
-(for gallery items, the `src` field in the `GALLERY` array; for Facebook
-posts, `image` in `FACEBOOK_POSTS`). Images with a `src` hide the text label.
-
-## Reviews & Facebook feed
-
-Google reviews live in the `REVIEWS` array and Facebook posts in `FACEBOOK_POSTS`. To add more, append entries there.
-Each post's `image` takes a real photo path; when it is `null`, a labelled placeholder is shown.
-The Facebook page URL is in `FACEBOOK_URL`.
+`public/images/perkins-logo.avif` is kept for future use; the header
+currently uses a text logo.
