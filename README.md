@@ -44,20 +44,23 @@ Real photos live in `public/images/`:
 
 | File | Used in |
 | --- | --- |
-| `perkins-truck.jpg` | About section |
+| `perkins-logo.avif` | Header logo |
+| `hero-lawn-mowing.avif` | Hero background |
+| `perkins-truck-logo.avif` | About section |
 | `fall-cleanup-before-after.jpg` | Gallery (with Before/After tags) |
 | `mulch-commercial-shrubs.jpg` | Gallery |
 | `mulch-residential-deck.jpg` | Gallery + "Spring cleanup" Facebook post |
 | `mulch-parking-lot-island.jpg` | Gallery |
+| `snow-clearing-lot.avif` | Gallery + "Cleared driveway" Facebook post |
+| `trimming-edging.avif` | Gallery |
 
-These spots still show labelled placeholders: the hero background, the
-"Snow Plowing" and "Skid Loader" gallery tiles, the "Cleared Driveway"
-Facebook post, and the map tile in Contact.
+The only remaining placeholder is the map tile in the Contact section.
+Wide photos are cropped with `position` (CSS object-position) so the
+subject stays in frame; adjust it per image if needed.
 
 To fill one, drop the photo in `public/images/` and set its `src`
 (for gallery items, the `src` field in the `GALLERY` array; for Facebook
 posts, `image` in `FACEBOOK_POSTS`). Images with a `src` hide the text label.
-The hero needs a wide, high-resolution photo (at least 1600px across).
 
 ## Reviews & Facebook feed
 

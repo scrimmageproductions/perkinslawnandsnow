@@ -143,8 +143,18 @@ const GALLERY = [
     caption: "Parking lot island refreshed with new mulch",
     src: "/images/mulch-parking-lot-island.jpg",
   },
-  { label: "Snow Plowing", caption: "Commercial lot cleared overnight" },
-  { label: "Skid Loader", caption: "Grading & light excavating" },
+  {
+    label: "Snow Plowing",
+    caption: "Clearing a snowed-in parking lot",
+    src: "/images/snow-clearing-lot.avif",
+    position: "75% center",
+  },
+  {
+    label: "Trimming & Edging",
+    caption: "Precise string trimming & edging",
+    src: "/images/trimming-edging.avif",
+    position: "60% center",
+  },
 ];
 
 const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=100062919445046";
@@ -167,7 +177,7 @@ const FACEBOOK_POSTS = [
   {
     text: "Another massive driveway cleared and salted before the morning commute! ❄️ We take pride in making sure our Davenport neighbors can get out safely, no matter how much snow drops overnight. Give us a call to get on our route!",
     imageLabel: "Facebook Post — Cleared Driveway",
-    image: null,
+    image: "/images/snow-clearing-lot.avif",
   },
   {
     text: "Spring cleanup in full swing! 🌱 Check out the sharp edges and fresh mulch on this property. We love transforming a winter-weary yard into a pristine outdoor space. Quality work is always our top priority.",
@@ -184,7 +194,16 @@ const FACEBOOK_POSTS = [
  * photo belongs there. With `src` (a real photo) the label is hidden.
  * If an image fails to load, a branded gradient is shown instead.
  */
-function PlaceholderImage({ width, height, label, className = "", src, labelClassName = "items-center justify-center" }) {
+function PlaceholderImage({
+  width,
+  height,
+  label,
+  className = "",
+  src,
+  labelClassName = "items-center justify-center",
+  position = "center", // CSS object-position, e.g. "75% center"
+  eager = false,
+}) {
   const [failed, setFailed] = useState(false);
   const url = src || `/api/placeholder/${width}/${height}`;
   const showLabel = !src || failed;
@@ -198,8 +217,9 @@ function PlaceholderImage({ width, height, label, className = "", src, labelClas
         <img
           src={url}
           alt={label}
-          loading="lazy"
+          loading={eager ? "eager" : "lazy"}
           onError={() => setFailed(true)}
+          style={{ objectPosition: position }}
           className="absolute inset-0 h-full w-full object-cover"
         />
       )}
@@ -263,14 +283,14 @@ function Header() {
       }`}
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a href="#home" className="flex items-center gap-2">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-800 text-white">
-            <Leaf className="h-5 w-5" />
-          </span>
-          <span className="text-lg font-extrabold leading-tight text-zinc-900 sm:text-xl">
-            Perkins <span className="text-green-800">Lawn</span> and{" "}
-            <span className="text-slate-500">Snow</span>
-          </span>
+        <a href="#home" className="flex items-center" aria-label="Perkins Lawn and Snow — home">
+          <img
+            src="/images/perkins-logo.avif"
+            alt="Perkins Lawn and Snow"
+            width={606}
+            height={196}
+            className="h-10 w-auto sm:h-12"
+          />
         </a>
 
         <div className="hidden items-center gap-8 lg:flex">
@@ -334,7 +354,10 @@ function Hero() {
       <PlaceholderImage
         width={1600}
         height={900}
-        label="Hero Image — Lawn & Snow Crew"
+        label="Lawn being mowed, seen from above"
+        src="/images/hero-lawn-mowing.avif"
+        position="70% center"
+        eager
         className="absolute inset-0"
         labelClassName="items-end justify-end p-6"
       />
@@ -396,13 +419,13 @@ function About() {
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
         <div className="relative mx-auto w-full max-w-lg">
           <PlaceholderImage
-            width={600}
-            height={600}
-            label="Perkins Lawn and Snow work truck"
-            src="/images/perkins-truck.jpg"
-            className="aspect-square rounded-2xl shadow-xl"
+            width={1024}
+            height={452}
+            label="Perkins Lawn and Snow work truck with company logo"
+            src="/images/perkins-truck-logo.avif"
+            className="aspect-[16/9] rounded-2xl shadow-xl"
           />
-          <div className="absolute -bottom-6 -right-4 hidden rounded-xl bg-green-800 px-6 py-5 text-white shadow-lg sm:block">
+          <div className="absolute -bottom-6 -left-4 hidden rounded-xl bg-green-800 px-6 py-5 text-white shadow-lg sm:block">
             <p className="text-3xl font-extrabold">20+</p>
             <p className="text-sm text-green-100">Years in business</p>
           </div>
@@ -496,7 +519,7 @@ function Gallery() {
           subtitle="A look at recent jobs and the equipment that gets them done."
         />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {GALLERY.map(({ label, caption, src, beforeAfter }) => (
+          {GALLERY.map(({ label, caption, src, position, beforeAfter }) => (
             <figure
               key={label}
               className="group overflow-hidden rounded-2xl bg-white shadow-md ring-1 ring-slate-200"
@@ -507,6 +530,7 @@ function Gallery() {
                   height={600}
                   label={label}
                   src={src}
+                  position={position}
                   className="aspect-square transition-transform duration-500 group-hover:scale-105"
                 />
                 {beforeAfter && (
