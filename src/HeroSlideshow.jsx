@@ -26,11 +26,11 @@ const heroSlideshowImages = [
     position: "70% center",
   },
   {
-    src: "/images/commercial-landscape-mulch.avif", // ← REPLACE
-    alt: "Commercial landscaping with fresh mulch and trimmed shrubs",
+    src: "/images/landscape-beds-boulders.avif", // ← REPLACE
+    alt: "Mulched landscape beds with boulders, river rock and golden shrubs",
     w: 1920,
     h: 1080,
-    position: "center 40%",
+    position: "center 60%",
   },
   {
     src: "/images/snow-loader-dump-trailer.avif", // ← REPLACE
@@ -40,11 +40,18 @@ const heroSlideshowImages = [
     position: "center 50%",
   },
   {
-    src: "/images/mulch-bed-lawn-edge.avif", // ← REPLACE
-    alt: "Freshly edged mulch bed beside a green lawn",
+    src: "/images/commercial-landscape-mulch.avif", // ← REPLACE
+    alt: "Commercial landscaping with fresh mulch and trimmed shrubs",
     w: 1920,
     h: 1080,
-    position: "center 50%",
+    position: "center 40%",
+  },
+  {
+    src: "/images/commercial-mulch-restaurant.avif", // ← REPLACE
+    alt: "Freshly mulched planting bed in front of a restaurant",
+    w: 1920,
+    h: 1080,
+    position: "center 25%",
   },
   {
     src: "/images/snow-hauling-dump-truck.avif", // ← REPLACE
@@ -54,11 +61,39 @@ const heroSlideshowImages = [
     position: "center 55%",
   },
   {
+    src: "/images/curved-walkway-mulch.avif", // ← REPLACE
+    alt: "Curved walkway lined with fresh mulch beds",
+    w: 1920,
+    h: 1080,
+    position: "center 55%",
+  },
+  {
+    src: "/images/mulch-bed-lawn-edge.avif", // ← REPLACE
+    alt: "Freshly edged mulch bed beside a green lawn",
+    w: 1920,
+    h: 1080,
+    position: "center 50%",
+  },
+  {
     src: "/images/skid-steer-sweeper.avif", // ← REPLACE
     alt: "Tracked skid steer with a sweeper attachment",
     w: 1920,
     h: 1080,
     position: "center 55%",
+  },
+  {
+    src: "/images/terraced-black-mulch-beds.avif", // ← REPLACE
+    alt: "Terraced garden beds with fresh black mulch",
+    w: 1920,
+    h: 1080,
+    position: "center 65%",
+  },
+  {
+    src: "/images/walkway-steps-black-mulch.avif", // ← REPLACE
+    alt: "Stepped walkway with black mulch beds and river rock",
+    w: 1920,
+    h: 1080,
+    position: "center 50%",
   },
 ];
 
@@ -69,7 +104,7 @@ const GREEN = "#1e5631";
 const EASE = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 
 /** One background slide: crossfades in/out and falls back to a placeholder on error. */
-function Slide({ slide, active, eager, zoom }) {
+function Slide({ slide, active, eager, zoom, load }) {
   const placeholder = `/api/placeholder/${slide.w}/${slide.h}`;
   const [src, setSrc] = useState(slide.src || placeholder);
 
@@ -79,21 +114,25 @@ function Slide({ slide, active, eager, zoom }) {
       className="absolute inset-0 transition-opacity ease-in-out"
       style={{ opacity: active ? 1 : 0, transitionDuration: `${FADE_MS}ms` }}
     >
-      <img
-        src={src}
-        alt={slide.alt}
-        loading={eager ? "eager" : "lazy"}
-        fetchPriority={eager ? "high" : "auto"}
-        decoding="async"
-        onError={() => src !== placeholder && setSrc(placeholder)}
-        className="h-full w-full object-cover"
-        style={{
-          objectPosition: slide.position || "center",
-          // Slow "Ken Burns" drift on the visible slide; off for reduced motion.
-          transform: zoom && active ? "scale(1)" : "scale(1.08)",
-          transition: zoom ? `transform ${SLIDE_DURATION_MS + FADE_MS}ms linear` : "none",
-        }}
-      />
+      {load && (
+        <img
+          src={src}
+          alt={slide.alt}
+          loading={eager ? "eager" : "lazy"}
+          fetchPriority={eager ? "high" : "auto"}
+          decoding="async"
+          onError={() => src !== placeholder && setSrc(placeholder)}
+          className="h-full w-full object-cover"
+          style={{
+            objectPosition: slide.position || "center",
+            // Slow "Ken Burns" drift on the visible slide; off for reduced motion.
+            transform: zoom && active ? "scale(1)" : "scale(1.08)",
+            transition: zoom
+              ? `transform ${SLIDE_DURATION_MS + FADE_MS}ms linear`
+              : "none",
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -104,6 +143,17 @@ export default function HeroSlideshow({ slides = heroSlideshowImages }) {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [mounted, setMounted] = useState(false);
   const count = slides.length;
+
+  // Download photos only as they're needed: the current slide, the next one,
+  // and any already shown. Keeps the first page load light.
+  const [loaded, setLoaded] = useState(() => new Set([0, 1]));
+  useEffect(() => {
+    setLoaded((prev) => {
+      const next = (index + 1) % count;
+      if (prev.has(index) && prev.has(next)) return prev;
+      return new Set([...prev, index, next]);
+    });
+  }, [index, count]);
 
   // Respect the visitor's reduced-motion setting: no auto-advance, no zoom.
   useEffect(() => {
@@ -138,7 +188,14 @@ export default function HeroSlideshow({ slides = heroSlideshowImages }) {
       {/* Background slideshow */}
       <div className="absolute inset-0 -z-10">
         {slides.map((slide, i) => (
-          <Slide key={slide.src + i} slide={slide} active={i === index} eager={i === 0} zoom={!reducedMotion} />
+          <Slide
+            key={slide.src + i}
+            slide={slide}
+            active={i === index}
+            eager={i === 0}
+            zoom={!reducedMotion}
+            load={loaded.has(i)}
+          />
         ))}
         <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-black/10" />
       </div>
@@ -155,7 +212,9 @@ export default function HeroSlideshow({ slides = heroSlideshowImages }) {
                 aria-label={`Show photo ${i + 1} of ${count}`}
                 aria-current={i === index}
                 className={`h-1.5 rounded-full transition-all duration-500 ${EASE} ${
-                  i === index ? "w-6 bg-[#1d1d1f]" : "w-1.5 bg-[#1d1d1f]/30 hover:bg-[#1d1d1f]/50"
+                  i === index
+                    ? "w-6 bg-[#1d1d1f]"
+                    : "w-1.5 bg-[#1d1d1f]/30 hover:bg-[#1d1d1f]/50"
                 }`}
               />
             ))}
@@ -166,7 +225,11 @@ export default function HeroSlideshow({ slides = heroSlideshowImages }) {
             aria-label={paused ? "Play slideshow" : "Pause slideshow"}
             className="flex h-6 w-6 items-center justify-center rounded-full text-[#1d1d1f] transition-colors hover:bg-black/5"
           >
-            {paused ? <Play className="h-3.5 w-3.5 fill-current" /> : <Pause className="h-3.5 w-3.5 fill-current" />}
+            {paused ? (
+              <Play className="h-3.5 w-3.5 fill-current" />
+            ) : (
+              <Pause className="h-3.5 w-3.5 fill-current" />
+            )}
           </button>
         </div>
       )}
@@ -198,7 +261,9 @@ export default function HeroSlideshow({ slides = heroSlideshowImages }) {
               style={{ color: GREEN }}
             >
               Our Services
-              <ChevronRight className={`h-4 w-4 transition-transform duration-300 ${EASE} group-hover:translate-x-1`} />
+              <ChevronRight
+                className={`h-4 w-4 transition-transform duration-300 ${EASE} group-hover:translate-x-1`}
+              />
             </a>
           </div>
         </div>
