@@ -43,11 +43,16 @@ If the keys are missing, the form runs in **demo mode**. It still shows the load
 
 ## Editing photos and content
 
-Everything editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:
+Hero slideshow photos are in `heroSlideshowImages` at the top of
+`src/HeroSlideshow.jsx` (a standalone component you can also paste into a
+Claude Artifact on its own). `SLIDE_DURATION_MS` and `FADE_MS` control the
+timing. The slideshow has a pause button and does not auto-advance for
+visitors who have reduced motion turned on.
+
+Everything else editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:
 
 | Array | Controls |
 | --- | --- |
-| `heroImage` | Hero background |
 | `aboutImage` | About section photo |
 | `services` | Bento service cards. `size` is `large` (2×2, shows a photo), `wide` (2×1) or `small` |
 | `galleryImages` | Masonry gallery. `aspect` is `portrait`, `square` or `landscape` |

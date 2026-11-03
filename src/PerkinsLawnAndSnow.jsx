@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
+import HeroSlideshow from "./HeroSlideshow.jsx"; // hero photos are set in HeroSlideshow.jsx
 import {
   Leaf,
   Snowflake,
@@ -39,14 +40,6 @@ import {
  * ==================================================================== */
 
 const LOGO_SRC = "/images/perkins-logo.avif"; // official Perkins Lawn & Snow logo — do not restyle
-
-const heroImage = {
-  src: "/images/hero-lawn-mowing.avif", // ← REPLACE: wide, cinematic photo (2000px+ across)
-  alt: "Lawn being mowed, seen from above",
-  w: 1920,
-  h: 1080,
-  position: "70% center",
-};
 
 const aboutImage = {
   src: "/images/perkins-truck-logo.avif", // ← REPLACE: e.g. Jason & Shannon, or the crew
@@ -322,40 +315,6 @@ function Header() {
         </div>
       </div>
     </header>
-  );
-}
-
-function Hero() {
-  return (
-    <section id="home" className="relative min-h-[100svh] overflow-hidden bg-[#1d1d1f]">
-      <Photo {...heroImage} eager className="absolute inset-0" imgClassName="scale-105" />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
-
-      <div className="relative mx-auto flex min-h-[100svh] max-w-7xl items-end px-5 pb-10 pt-28 sm:px-8 sm:pb-16">
-        <Reveal className="w-full max-w-2xl">
-          <div className={`rounded-3xl bg-white/75 p-8 backdrop-blur-xl backdrop-saturate-150 sm:p-12 ${softShadow}`}>
-            <h1 className="text-5xl font-bold leading-[1.02] tracking-tight text-[#1d1d1f] sm:text-6xl lg:text-7xl">
-              Welcome to Perkins Lawn and Snow.
-            </h1>
-            <p className="mt-5 text-lg leading-relaxed text-[#6e6e73] sm:text-xl">
-              Professional Lawn Care &amp; Snow Removal in Davenport, IA.
-            </p>
-            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
-              <a href="#contact" className={`${pillPrimary} px-7 py-3.5 text-base`}>
-                Get a Free Quote
-              </a>
-              <a
-                href="#services"
-                className="group inline-flex items-center gap-1 text-base font-medium text-[#1e5631] transition-colors hover:text-[#17452a]"
-              >
-                Our Services
-                <ChevronRight className={`h-4 w-4 transition-transform duration-300 ${EASE} group-hover:translate-x-1`} />
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
   );
 }
 
@@ -808,7 +767,7 @@ export default function PerkinsLawnAndSnow() {
     <div className="min-h-screen bg-white font-sans text-[#1d1d1f] antialiased selection:bg-[#1e5631] selection:text-white">
       <Header />
       <main>
-        <Hero />
+        <HeroSlideshow />
         <About />
         <Services />
         <Gallery />
