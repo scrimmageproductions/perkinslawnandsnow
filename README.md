@@ -61,5 +61,6 @@ Three service cards use stand-in photos until real ones are available
 (marked `stand-in photo` in the code): Junk Removal, Fertilization Programs
 and Aggregate Delivery.
 
-`public/images/perkins-logo.avif` is kept for future use; the header
-currently uses a text logo.
+The header uses the official logo, `public/images/perkins-logo.avif`
+(path set in `LOGO_SRC`). The footer uses plain text, because the logo's
+black lettering doesn't show on the dark background.

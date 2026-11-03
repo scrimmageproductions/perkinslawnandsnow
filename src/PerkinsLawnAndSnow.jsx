@@ -163,6 +163,7 @@ const PHONE_HREF = "tel:+15636768052";
 const ADDRESS = "5519 W River Dr, Davenport, IA 52802";
 const MAPS_HREF = "https://www.google.com/maps/search/?api=1&query=5519+W+River+Dr+Davenport+IA+52802";
 const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=100062919445046";
+const LOGO_SRC = "/images/perkins-logo.avif"; // official Perkins Lawn & Snow logo
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -231,8 +232,15 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <a href="#home" className="text-xl font-bold tracking-tight text-green-800 sm:text-2xl">
-          Perkins Lawn <span className="font-semibold text-zinc-800">and Snow</span>
+        <a href="#home" className="shrink-0" aria-label="Perkins Lawn and Snow, back to top">
+          {/* Official logo. Do not restyle; replace the file to update it. */}
+          <img
+            src={LOGO_SRC}
+            alt="Perkins Lawn and Snow"
+            width={606}
+            height={196}
+            className="h-11 w-auto sm:h-12"
+          />
         </a>
 
         <div className="hidden items-center gap-8 lg:flex">
