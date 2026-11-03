@@ -53,8 +53,17 @@ Real photos live in `public/images/`:
 | `mulch-parking-lot-island.jpg` | Gallery |
 | `snow-clearing-lot.avif` | Gallery + "Cleared driveway" Facebook post |
 | `trimming-edging.avif` | Gallery |
+| `concrete-walkway-steps.jpg` | Concrete Services card + Gallery |
+| `mulch-pile-wheelbarrow.jpg` | Mulch Services card |
+| `pressure-washing-pavers.jpg` | Pressure Washing card + Gallery |
+| `snow-plow-cab-view.jpg` | Snow Removal card |
+| `landscape-fabric-planting.jpg` | Gallery |
 
-The only remaining placeholder is the map tile in the Contact section.
+Service cards take an `image` (and optional `imagePosition`) in the
+`SERVICES` array. Junk Removal, Fertilization Programs and Aggregate
+Delivery still show labelled placeholders.
+
+The map tile in the Contact section is also still a placeholder.
 Wide photos are cropped with `position` (CSS object-position) so the
 subject stays in frame; adjust it per image if needed.
 

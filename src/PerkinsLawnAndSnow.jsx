@@ -76,16 +76,22 @@ const NAV_LINKS = [
 const SERVICES = [
   {
     title: "Lawn Care & Maintenance",
+    image: "/images/hero-lawn-mowing.avif",
+    imagePosition: "70% center",
     icon: Leaf,
     desc: "Weekly mowing, edging, trimming and seasonal cleanups that keep your property looking sharp all year.",
   },
   {
     title: "Snow Removal Services",
+    image: "/images/snow-plow-cab-view.jpg",
+    imagePosition: "center",
     icon: Snowflake,
     desc: "Reliable plowing, shoveling and salting for driveways, sidewalks and commercial lots — all winter long.",
   },
   {
     title: "Mulch Services",
+    image: "/images/mulch-pile-wheelbarrow.jpg",
+    imagePosition: "center",
     icon: Shovel,
     desc: "Fresh mulch delivered and installed to protect beds, retain moisture and boost curb appeal.",
   },
@@ -96,11 +102,15 @@ const SERVICES = [
   },
   {
     title: "Pressure Washing",
+    image: "/images/pressure-washing-pavers.jpg",
+    imagePosition: "center",
     icon: Droplets,
     desc: "Restore driveways, patios, siding and decks by blasting away dirt, mildew and grime.",
   },
   {
     title: "Concrete Services",
+    image: "/images/concrete-walkway-steps.jpg",
+    imagePosition: "center 60%",
     icon: BrickWall,
     desc: "Durable concrete work for pads, walkways and driveways, finished with care.",
   },
@@ -154,6 +164,21 @@ const GALLERY = [
     caption: "Precise string trimming & edging",
     src: "/images/trimming-edging.avif",
     position: "60% center",
+  },
+  {
+    label: "Concrete Walkway",
+    caption: "New stepped concrete walkway",
+    src: "/images/concrete-walkway-steps.jpg",
+  },
+  {
+    label: "Landscape Fabric & Planting",
+    caption: "Shrubs planted through weed-barrier fabric",
+    src: "/images/landscape-fabric-planting.jpg",
+  },
+  {
+    label: "Pressure Washing",
+    caption: "Pressure washing a paver patio",
+    src: "/images/pressure-washing-pavers.jpg",
   },
 ];
 
@@ -484,16 +509,28 @@ function Services() {
         />
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {SERVICES.map(({ title, icon: Icon, desc }) => (
+          {SERVICES.map(({ title, icon: Icon, desc, image, imagePosition }) => (
             <div
               key={title}
-              className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-green-700 hover:shadow-lg"
+              className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:border-green-700 hover:shadow-lg"
             >
-              <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 text-green-800 transition-colors group-hover:bg-green-800 group-hover:text-white">
-                <Icon className="h-6 w-6" />
+              {/* Cards without `image` show a labelled placeholder to swap later. */}
+              <PlaceholderImage
+                width={400}
+                height={300}
+                label={title}
+                src={image}
+                position={imagePosition}
+                className="aspect-[4/3]"
+                labelClassName="items-center justify-center p-3 text-center"
+              />
+              <div className="relative p-6 pt-9">
+                <div className="absolute -top-6 left-6 flex h-12 w-12 items-center justify-center rounded-xl bg-green-800 text-white shadow-md ring-4 ring-white">
+                  <Icon className="h-6 w-6" />
+                </div>
+                <h3 className="text-lg font-bold text-zinc-900">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{desc}</p>
               </div>
-              <h3 className="text-lg font-bold text-zinc-900">{title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{desc}</p>
             </div>
           ))}
         </div>
