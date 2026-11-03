@@ -1,114 +1,117 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import {
+  Leaf,
+  Snowflake,
+  Shovel,
+  Trash2,
+  Droplets,
+  BrickWall,
+  Sprout,
+  Truck,
   Phone,
   MapPin,
   Menu,
   X,
   Star,
   Facebook,
-  ArrowRight,
+  ChevronRight,
   Loader2,
-  CheckCircle2,
+  Check,
   AlertCircle,
 } from "lucide-react";
 
 /* ==================================================================== *
- *  IMAGES — EDIT HERE
+ *  IMAGES & CONTENT — EDIT HERE
  *
- *  Every photo on the site comes from the arrays below.
+ *  Every photo on the site comes from the data below.
  *
  *  To change a photo, set its `src` to either:
  *    • a local file in /public/images, e.g.  "/images/my-photo.jpg"
  *    • a placeholder,                  e.g.  "/api/placeholder/800/600"
  *
- *  If a local file is missing (or you paste this component into a Claude
- *  Artifact, where /public is not available), the image automatically
+ *  If a local file is missing (or this component is pasted into a Claude
+ *  Artifact, where /public is not available), each image automatically
  *  falls back to /api/placeholder at the size given in `w` / `h`.
  *
- *  `position` (optional) is the CSS object-position used when the photo
- *  is cropped, e.g. "70% center" keeps the right side of a wide photo.
+ *  `position` (optional) = CSS object-position used when a photo is
+ *  cropped, e.g. "70% center" keeps the right side of a wide photo.
  * ==================================================================== */
 
+const LOGO_SRC = "/images/perkins-logo.avif"; // official Perkins Lawn & Snow logo — do not restyle
+
 const heroImage = {
-  src: "/images/hero-lawn-mowing.avif", // ← REPLACE: wide photo, 1600px+ across
+  src: "/images/hero-lawn-mowing.avif", // ← REPLACE: wide, cinematic photo (2000px+ across)
   alt: "Lawn being mowed, seen from above",
-  w: 1600,
-  h: 900,
+  w: 1920,
+  h: 1080,
   position: "70% center",
 };
 
 const aboutImage = {
-  src: "/images/perkins-truck-logo.avif", // ← REPLACE: e.g. a photo of Jason & Shannon or the crew
+  src: "/images/perkins-truck-logo.avif", // ← REPLACE: e.g. Jason & Shannon, or the crew
   alt: "Perkins Lawn and Snow work truck",
-  w: 800,
-  h: 600,
-  position: "75% center",
+  w: 1200,
+  h: 900,
+  position: "65% center",
 };
 
+// Bento grid. `size`: "large" (2×2, shows a photo), "wide" (2×1) or "small" (1×1).
+// The order below is tuned so the grid packs cleanly on desktop.
 const services = [
   {
     title: "Lawn Care & Maintenance",
-    description: "Weekly mowing, edging and trimming that keeps your property looking sharp all season.",
+    text: "Precision mowing, edging and trimming. Every week, all season.",
+    icon: Leaf,
+    size: "large",
     src: "/images/trimming-edging.avif", // ← REPLACE
     position: "60% center",
   },
+  { title: "Mulch", text: "Fresh beds. Clean edges. Instant curb appeal.", icon: Shovel, size: "small" },
+  { title: "Fertilization", text: "Seasonal programs for thicker, greener turf.", icon: Sprout, size: "small" },
+  { title: "Pressure Washing", text: "Driveways, patios and siding, restored to like-new.", icon: Droplets, size: "small" },
+  { title: "Junk Removal", text: "Yard debris, old furniture, construction waste. Gone.", icon: Trash2, size: "small" },
   {
-    title: "Snow Removal Services",
-    description: "Plowing, shoveling and salting for driveways, sidewalks and commercial lots all winter long.",
-    src: "/images/snow-plow-cab-view.jpg", // ← REPLACE
+    title: "Concrete",
+    text: "Pads, walkways and driveways, poured and finished with care.",
+    icon: BrickWall,
+    size: "wide",
   },
   {
-    title: "Mulch Services",
-    description: "Fresh mulch delivered and installed to protect your beds and boost curb appeal.",
-    src: "/images/mulch-commercial-shrubs.jpg", // ← REPLACE
-  },
-  {
-    title: "Junk Removal Services",
-    description: "Hauling of unwanted items, yard debris and construction waste, handled quickly.",
-    src: "/images/mulch-pile-wheelbarrow.jpg", // ← REPLACE: stand-in photo, swap for a junk-hauling shot
-  },
-  {
-    title: "Pressure Washing",
-    description: "Driveways, patios, siding and decks cleaned of dirt, mildew and grime.",
-    src: "/images/pressure-washing-pavers.jpg", // ← REPLACE
-  },
-  {
-    title: "Concrete Services",
-    description: "Durable concrete pads, walkways and driveways, finished with care.",
-    src: "/images/concrete-walkway-steps.jpg", // ← REPLACE
-    position: "center 60%",
-  },
-  {
-    title: "Fertilization Programs",
-    description: "Seasonal fertilization plans for thicker, greener and healthier turf.",
-    src: "/images/hero-lawn-mowing.avif", // ← REPLACE: stand-in photo, swap for a fertilizing shot
-    position: "30% center",
+    title: "Snow Removal",
+    text: "Plowed, shoveled and salted before your morning commute.",
+    icon: Snowflake,
+    size: "large",
+    src: "/images/snow-clearing-lot.avif", // ← REPLACE
+    position: "75% center",
   },
   {
     title: "Aggregate Delivery",
-    description: "Rock, gravel, sand and black dirt delivered right where you need it.",
-    src: "/images/mulch-residential-deck.jpg", // ← REPLACE: stand-in photo, swap for a delivery/trailer shot
-    position: "right center",
+    text: "Rock, gravel, sand and black dirt, delivered right where you need it.",
+    icon: Truck,
+    size: "wide",
   },
 ];
 
+const EXTRA_SERVICES =
+  "Bush & shrub trimming, skid loader work, grading, light excavating, hauling, trucking, house cleanouts, storage cleanouts, and more.";
+
 const galleryImages = [
-  // ← REPLACE / ADD: { src, caption, position? }. Keep the count a multiple of 3 for a full grid.
-  { src: "/images/fall-cleanup-before-after.jpg", caption: "Fall leaf cleanup, before and after" },
-  { src: "/images/mulch-commercial-shrubs.jpg", caption: "Mulch and shrub trimming, commercial property" },
-  { src: "/images/mulch-residential-deck.jpg", caption: "Black mulch beds with stone borders" },
-  { src: "/images/mulch-parking-lot-island.jpg", caption: "Parking lot island refreshed with mulch" },
-  { src: "/images/snow-clearing-lot.avif", caption: "Clearing a snowed-in parking lot", position: "75% center" },
-  { src: "/images/trimming-edging.avif", caption: "String trimming and edging", position: "60% center" },
-  { src: "/images/concrete-walkway-steps.jpg", caption: "New stepped concrete walkway" },
-  { src: "/images/landscape-fabric-planting.jpg", caption: "Shrubs planted through weed-barrier fabric" },
-  { src: "/images/pressure-washing-pavers.jpg", caption: "Pressure washing a paver patio" },
+  // ← REPLACE / ADD: { src, caption, aspect, position? }
+  // `aspect` sets the tile shape in the masonry grid: "portrait", "square" or "landscape".
+  { src: "/images/fall-cleanup-before-after.jpg", caption: "Fall cleanup, before and after", aspect: "portrait" },
+  { src: "/images/mulch-commercial-shrubs.jpg", caption: "Commercial mulch and shrub care", aspect: "square" },
+  { src: "/images/snow-clearing-lot.avif", caption: "Clearing a snowed-in lot", aspect: "landscape", position: "75% center" },
+  { src: "/images/mulch-parking-lot-island.jpg", caption: "Parking lot island refresh", aspect: "square" },
+  { src: "/images/trimming-edging.avif", caption: "Trimming and edging", aspect: "landscape", position: "60% center" },
+  { src: "/images/mulch-residential-deck.jpg", caption: "Black mulch beds, stone borders", aspect: "portrait" },
+  { src: "/images/pressure-washing-pavers.jpg", caption: "Paver patio pressure wash", aspect: "landscape" },
+  { src: "/images/concrete-walkway-steps.jpg", caption: "Stepped concrete walkway", aspect: "portrait" },
+  { src: "/images/landscape-fabric-planting.jpg", caption: "Planting through weed barrier", aspect: "square" },
 ];
 
 const facebookPosts = [
-  // ← REPLACE / ADD: copy text and photos from the Facebook page.
-  // Set `src: null` for a text-only post.
+  // ← REPLACE / ADD: copy text and photos from the Facebook page. `src: null` = text-only.
   {
     text: "Another massive driveway cleared and salted before the morning commute! ❄️ We take pride in making sure our Davenport neighbors can get out safely, no matter how much snow drops overnight. Give us a call to get on our route!",
     src: "/images/snow-clearing-lot.avif", // ← REPLACE
@@ -163,7 +166,6 @@ const PHONE_HREF = "tel:+15636768052";
 const ADDRESS = "5519 W River Dr, Davenport, IA 52802";
 const MAPS_HREF = "https://www.google.com/maps/search/?api=1&query=5519+W+River+Dr+Davenport+IA+52802";
 const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=100062919445046";
-const LOGO_SRC = "/images/perkins-logo.avif"; // official Perkins Lawn & Snow logo
 
 const NAV_LINKS = [
   { label: "Home", href: "#home" },
@@ -174,26 +176,27 @@ const NAV_LINKS = [
   { label: "Contact", href: "#contact" },
 ];
 
-const EXTRA_SERVICES =
-  "Bush & shrub trimming, skid loader work, grading, light excavating, hauling, trucking, house cleanouts, storage cleanouts, and more.";
+/* ----------------------------- Design tokens ------------------------ *
+ *  Ink #1d1d1f (headings) · Body #6e6e73 · Secondary #86868b
+ *  Off-white #f5f5f7 · Forest green #1e5631 (hover #17452a)
+ * --------------------------------------------------------------------- */
+const EASE = "ease-[cubic-bezier(0.22,1,0.36,1)]";
+const pillPrimary = `inline-flex items-center justify-center gap-2 rounded-full bg-[#1e5631] font-medium text-white transition-all duration-300 ${EASE} hover:bg-[#17452a] active:scale-[0.98] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#1e5631]/30`;
+const softShadow = "shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)]";
 
 /* ----------------------------- Building blocks ---------------------- */
 
-/** Photo with automatic fallback: src → /api/placeholder → flat grey block. */
-function Photo({ src, alt = "", w = 800, h = 600, position = "center", className = "", eager = false }) {
+/** Photo with automatic fallback: src → /api/placeholder → soft grey block. */
+function Photo({ src, alt = "", w = 800, h = 600, position = "center", className = "", imgClassName = "", eager = false }) {
   const placeholder = `/api/placeholder/${w}/${h}`;
   const [current, setCurrent] = useState(src || placeholder);
   const [failed, setFailed] = useState(false);
-
-  const handleError = () => {
-    if (current !== placeholder) setCurrent(placeholder);
-    else setFailed(true);
-  };
+  const isAbsolute = /\babsolute\b/.test(className);
 
   return (
-    <div className={`${/\babsolute\b/.test(className) ? "" : "relative"} overflow-hidden bg-slate-200 ${className}`}>
+    <div className={`${isAbsolute ? "" : "relative"} overflow-hidden bg-[#e8e8ed] ${className}`}>
       {failed ? (
-        <div className="absolute inset-0 flex items-center justify-center p-4 text-center text-sm font-medium text-slate-500">
+        <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-sm text-[#86868b]">
           {alt || "Photo"}
         </div>
       ) : (
@@ -201,28 +204,61 @@ function Photo({ src, alt = "", w = 800, h = 600, position = "center", className
           src={current}
           alt={alt}
           loading={eager ? "eager" : "lazy"}
-          onError={handleError}
+          onError={() => (current !== placeholder ? setCurrent(placeholder) : setFailed(true))}
           style={{ objectPosition: position }}
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover ${imgClassName}`}
         />
       )}
     </div>
   );
 }
 
-function SectionHeading({ title, intro, align = "center" }) {
-  const centered = align === "center";
+/** Fades content up as it scrolls into view. Honors reduced-motion. */
+function Reveal({ children, className = "", delay = 0 }) {
+  const ref = useRef(null);
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setShown(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShown(true);
+          io.disconnect();
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   return (
-    <div className={`mb-12 ${centered ? "mx-auto max-w-2xl text-center" : ""}`}>
-      <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl">{title}</h2>
-      <div className={`mt-4 h-1 w-14 bg-green-800 ${centered ? "mx-auto" : ""}`} />
-      {intro && <p className="mt-5 text-lg text-slate-600">{intro}</p>}
+    <div
+      ref={ref}
+      style={{ transitionDelay: `${delay}ms` }}
+      className={`transition-all duration-1000 ${EASE} motion-reduce:transition-none ${
+        shown ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+      } ${className}`}
+    >
+      {children}
     </div>
   );
 }
 
-const btnPrimary =
-  "inline-flex items-center justify-center gap-2 rounded-md bg-green-800 px-6 py-3 font-semibold text-white transition-colors hover:bg-green-900";
+function SectionIntro({ eyebrow, title, intro, className = "" }) {
+  return (
+    <Reveal className={`max-w-3xl ${className}`}>
+      {eyebrow && <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#1e5631]">{eyebrow}</p>}
+      <h2 className="mt-4 text-5xl font-semibold tracking-tight text-[#1d1d1f] sm:text-6xl">{title}</h2>
+      {intro && <p className="mt-6 text-xl leading-relaxed text-[#6e6e73]">{intro}</p>}
+    </Reveal>
+  );
+}
 
 /* ----------------------------- Sections ----------------------------- */
 
@@ -230,38 +266,31 @@ function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200 bg-white">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-white/70 backdrop-blur-md backdrop-saturate-150">
+      <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5 sm:px-8">
         <a href="#home" className="shrink-0" aria-label="Perkins Lawn and Snow, back to top">
-          {/* Official logo. Do not restyle; replace the file to update it. */}
-          <img
-            src={LOGO_SRC}
-            alt="Perkins Lawn and Snow"
-            width={606}
-            height={196}
-            className="h-11 w-auto sm:h-12"
-          />
+          <img src={LOGO_SRC} alt="Perkins Lawn and Snow" width={606} height={196} className="h-9 w-auto sm:h-10" />
         </a>
 
-        <div className="hidden items-center gap-8 lg:flex">
+        <div className="hidden items-center gap-9 lg:flex">
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="border-b-2 border-transparent py-1 text-sm font-medium text-slate-700 transition-colors hover:border-green-800 hover:text-green-800"
+              className="text-[13px] font-medium text-[#1d1d1f]/75 transition-colors duration-300 hover:text-[#1d1d1f]"
             >
               {l.label}
             </a>
           ))}
-          <a href={PHONE_HREF} className={`${btnPrimary} px-5 py-2.5 text-sm`}>
-            <Phone className="h-4 w-4" />
+          <a href={PHONE_HREF} className={`${pillPrimary} px-5 py-2 text-[13px]`}>
+            <Phone className="h-3.5 w-3.5" />
             Call Now: {PHONE_DISPLAY}
           </a>
         </div>
 
         <button
           type="button"
-          className="p-2 text-zinc-900 lg:hidden"
+          className="-mr-2 p-2 text-[#1d1d1f] lg:hidden"
           onClick={() => setOpen((o) => !o)}
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
@@ -270,53 +299,61 @@ function Header() {
         </button>
       </nav>
 
-      {open && (
-        <div className="border-t border-slate-200 px-4 pb-5 lg:hidden">
+      <div
+        className={`overflow-hidden transition-all duration-500 ${EASE} lg:hidden ${
+          open ? "max-h-[28rem] opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-5 pb-6 pt-2">
           {NAV_LINKS.map((l) => (
             <a
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="block border-b border-slate-100 py-3 font-medium text-slate-700 hover:text-green-800"
+              className="block border-b border-black/5 py-3.5 text-lg font-medium text-[#1d1d1f]"
             >
               {l.label}
             </a>
           ))}
-          <a href={PHONE_HREF} className={`${btnPrimary} mt-4 w-full`}>
+          <a href={PHONE_HREF} className={`${pillPrimary} mt-5 w-full py-3.5`}>
             <Phone className="h-4 w-4" />
             Call Now: {PHONE_DISPLAY}
           </a>
         </div>
-      )}
+      </div>
     </header>
   );
 }
 
 function Hero() {
   return (
-    <section id="home" className="relative">
-      <Photo {...heroImage} eager className="absolute inset-0" />
-      <div className="absolute inset-0 bg-zinc-900/60" />
-      <div className="relative mx-auto flex min-h-[78vh] max-w-7xl items-center px-4 py-24 sm:px-6 lg:px-8">
-        <div className="max-w-2xl">
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Welcome to Perkins Lawn and Snow
-          </h1>
-          <p className="mt-5 text-lg text-slate-200 sm:text-xl">
-            Professional Lawn Care &amp; Snow Removal in Davenport, IA.
-          </p>
-          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <a href="#contact" className={`${btnPrimary} px-7 py-3.5`}>
-              Get a Free Quote
-            </a>
-            <a
-              href="#services"
-              className="inline-flex items-center justify-center rounded-md border border-white px-7 py-3.5 font-semibold text-white transition-colors hover:bg-white hover:text-zinc-900"
-            >
-              Our Services
-            </a>
+    <section id="home" className="relative min-h-[100svh] overflow-hidden bg-[#1d1d1f]">
+      <Photo {...heroImage} eager className="absolute inset-0" imgClassName="scale-105" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/5 to-transparent" />
+
+      <div className="relative mx-auto flex min-h-[100svh] max-w-7xl items-end px-5 pb-10 pt-28 sm:px-8 sm:pb-16">
+        <Reveal className="w-full max-w-2xl">
+          <div className={`rounded-3xl bg-white/75 p-8 backdrop-blur-xl backdrop-saturate-150 sm:p-12 ${softShadow}`}>
+            <h1 className="text-5xl font-bold leading-[1.02] tracking-tight text-[#1d1d1f] sm:text-6xl lg:text-7xl">
+              Welcome to Perkins Lawn and Snow.
+            </h1>
+            <p className="mt-5 text-lg leading-relaxed text-[#6e6e73] sm:text-xl">
+              Professional Lawn Care &amp; Snow Removal in Davenport, IA.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
+              <a href="#contact" className={`${pillPrimary} px-7 py-3.5 text-base`}>
+                Get a Free Quote
+              </a>
+              <a
+                href="#services"
+                className="group inline-flex items-center gap-1 text-base font-medium text-[#1e5631] transition-colors hover:text-[#17452a]"
+              >
+                Our Services
+                <ChevronRight className={`h-4 w-4 transition-transform duration-300 ${EASE} group-hover:translate-x-1`} />
+              </a>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -324,150 +361,240 @@ function Hero() {
 
 function About() {
   return (
-    <section id="about" className="bg-white py-20 sm:py-24">
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 sm:px-6 md:grid-cols-2 lg:gap-16 lg:px-8">
-        <Photo {...aboutImage} className="aspect-[4/3] rounded-md" />
-        <div>
-          <SectionHeading title="About Our Family Business" align="left" />
-          <div className="-mt-4 space-y-5 text-lg leading-relaxed text-slate-700">
-            <p>
-              Perkins Lawn and Snow planted its roots in the early 1980s when Jason helped his
-              grandfather mow yards and shovel sidewalks. What started as earning extra money grew
-              into a passion.
-            </p>
-            <p>
-              In 2001, Jason jumped in with both feet, starting &ldquo;Perkins and Son&rsquo;s Snow
-              Removal.&rdquo; As the company expanded, the name evolved to &ldquo;Perkins Lawn and
-              Snow.&rdquo;
-            </p>
-            <p>
-              Today, Jason and his wife Shannon own and operate the business together. We look
-              forward to working with you!
-            </p>
-          </div>
-          <a href="#contact" className={`${btnPrimary} mt-8`}>
-            Get a Free Quote
-          </a>
+    <section id="about" className="bg-white py-28 sm:py-36">
+      <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-12 lg:gap-10">
+        <div className="lg:col-span-5 lg:pt-10">
+          <SectionIntro
+            eyebrow="Since the early 1980s"
+            title="About Our Family Business"
+            intro="A Davenport family business, built one yard and one driveway at a time."
+          />
+        </div>
+
+        <div className="lg:col-span-7">
+          <Reveal>
+            <Photo {...aboutImage} className={`aspect-[16/10] rounded-3xl ${softShadow}`} />
+          </Reveal>
+          <Reveal delay={150} className="relative -mt-10 ml-auto w-[92%] sm:-mt-12 sm:w-[85%]">
+            <div className={`space-y-5 rounded-3xl bg-white p-8 text-lg leading-relaxed text-[#6e6e73] sm:p-11 ${softShadow}`}>
+              <p>
+                Perkins Lawn and Snow planted its roots in the early 1980s when Jason helped his grandfather
+                mow yards and shovel sidewalks. What started as earning extra money grew into a passion.
+              </p>
+              <p>
+                In 2001, Jason jumped in with both feet, starting &ldquo;Perkins and Son&rsquo;s Snow
+                Removal.&rdquo; As the company expanded, the name evolved to &ldquo;Perkins Lawn and Snow.&rdquo;
+              </p>
+              <p>
+                Today, Jason and his wife Shannon own and operate the business together, striving to keep
+                employees and clients happy.{" "}
+                <span className="font-medium text-[#1d1d1f]">We look forward to working with you!</span>
+              </p>
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>
+  );
+}
+
+const SIZE_CLASSES = {
+  large: "sm:col-span-2 lg:row-span-2",
+  wide: "sm:col-span-2",
+  small: "",
+};
+
+function ServiceCard({ service }) {
+  const { title, text, icon: Icon, size, src, position } = service;
+  const large = size === "large";
+
+  if (size === "wide") {
+    return (
+      <article
+        className={`group relative flex h-full items-end overflow-hidden rounded-3xl bg-[#f5f5f7] p-8 transition-all duration-700 ${EASE} hover:scale-[1.02] hover:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.28)] sm:p-10`}
+      >
+        <Icon
+          aria-hidden="true"
+          strokeWidth={1}
+          className={`pointer-events-none absolute -right-6 -top-6 h-48 w-48 text-[#1e5631]/[0.07] transition-transform duration-1000 ${EASE} group-hover:-rotate-6 group-hover:scale-110`}
+        />
+        <div className="relative max-w-sm">
+          <Icon className="h-8 w-8 text-[#1e5631]" strokeWidth={1.6} />
+          <h3 className="mt-6 text-2xl font-semibold tracking-tight text-[#1d1d1f]">{title}</h3>
+          <p className="mt-3 leading-relaxed text-[#6e6e73]">{text}</p>
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <article
+      className={`group flex h-full flex-col overflow-hidden rounded-3xl bg-[#f5f5f7] p-8 transition-all duration-700 ${EASE} hover:scale-[1.02] hover:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.28)] sm:p-10`}
+    >
+      <Icon className="h-8 w-8 text-[#1e5631]" strokeWidth={1.6} />
+      <h3 className={`mt-6 font-semibold tracking-tight text-[#1d1d1f] ${large ? "text-3xl sm:text-4xl" : "text-2xl"}`}>
+        {title}
+      </h3>
+      <p className={`mt-3 leading-relaxed text-[#6e6e73] ${large ? "text-lg" : ""}`}>{text}</p>
+      {large && src && (
+        <Photo
+          src={src}
+          alt={title}
+          w={900}
+          h={600}
+          position={position}
+          className="mt-8 aspect-[3/2] rounded-2xl lg:aspect-auto lg:min-h-[240px] lg:flex-1"
+          imgClassName={`transition-transform duration-1000 ${EASE} group-hover:scale-105`}
+        />
+      )}
+    </article>
   );
 }
 
 function Services() {
   return (
-    <section id="services" className="border-y border-slate-200 bg-slate-50 py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          title="Our Services"
-          intro="From spring cleanups to the first snowfall, one local crew handles it all."
+    <section id="services" className="bg-white py-28 sm:py-36">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <SectionIntro
+          eyebrow="Services"
+          title="Everything your property needs. All year."
+          intro="From the first mow of spring to the last plow of winter, one local crew handles it all."
+          className="mb-16 sm:mb-20"
         />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {services.map((s) => (
-            <article
-              key={s.title}
-              className="group overflow-hidden rounded-md border border-slate-200 bg-white transition-colors hover:border-green-800"
-            >
-              <Photo src={s.src} alt={s.title} w={600} h={450} position={s.position} className="aspect-[4/3]" />
-              <div className="border-t-4 border-transparent p-5 transition-colors group-hover:border-green-800">
-                <h3 className="text-lg font-semibold text-zinc-900 group-hover:text-green-800">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">{s.description}</p>
-              </div>
-            </article>
+
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[minmax(260px,auto)]">
+          {services.map((s, i) => (
+            <Reveal key={s.title} delay={(i % 4) * 80} className={SIZE_CLASSES[s.size]}>
+              <ServiceCard service={s} />
+            </Reveal>
           ))}
         </div>
-        <p className="mx-auto mt-12 max-w-3xl text-center text-slate-700">
-          <span className="font-semibold text-zinc-900">We also offer:</span> {EXTRA_SERVICES}
-        </p>
+
+        <Reveal className="mx-auto mt-16 max-w-3xl text-center">
+          <p className="text-lg leading-relaxed text-[#6e6e73]">
+            <span className="font-medium text-[#1d1d1f]">We also offer:</span> {EXTRA_SERVICES}
+          </p>
+        </Reveal>
       </div>
     </section>
   );
 }
+
+const ASPECTS = { portrait: "aspect-[4/5]", square: "aspect-square", landscape: "aspect-[4/3]" };
 
 function Gallery() {
   return (
-    <section id="gallery" className="bg-white py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="Our Work" intro="Recent projects around Davenport and the Quad Cities." />
-        <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-          {galleryImages.map((img) => (
-            <figure key={img.src + img.caption} className="group">
-              <Photo
-                src={img.src}
-                alt={img.caption}
-                w={600}
-                h={600}
-                position={img.position}
-                className="aspect-square rounded-md ring-1 ring-slate-200 transition group-hover:ring-2 group-hover:ring-green-800"
-              />
-              <figcaption className="mt-3 text-sm text-slate-600">{img.caption}</figcaption>
-            </figure>
+    <section id="gallery" className="bg-[#f5f5f7] py-28 sm:py-36">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <SectionIntro eyebrow="Gallery" title="Our work speaks for itself." className="mb-16 sm:mb-20" />
+
+        <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 lg:gap-8">
+          {galleryImages.map((img, i) => (
+            <Reveal key={img.src + i} delay={(i % 3) * 100} className="mb-6 break-inside-avoid lg:mb-8">
+              <figure className="group relative overflow-hidden rounded-3xl">
+                <Photo
+                  src={img.src}
+                  alt={img.caption}
+                  w={800}
+                  h={800}
+                  position={img.position}
+                  className={ASPECTS[img.aspect] || ASPECTS.square}
+                  imgClassName={`transition-transform duration-1000 ${EASE} group-hover:scale-105`}
+                />
+                <figcaption
+                  className={`pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/55 to-transparent px-6 pb-5 pt-16 text-sm font-medium text-white transition-opacity duration-500 lg:opacity-0 lg:group-hover:opacity-100`}
+                >
+                  {img.caption}
+                </figcaption>
+              </figure>
+            </Reveal>
           ))}
         </div>
       </div>
     </section>
-  );
-}
-
-function Stars({ count }) {
-  return (
-    <div className="flex gap-0.5" role="img" aria-label={`${count} out of 5 stars`}>
-      {Array.from({ length: 5 }).map((_, i) => (
-        <Star key={i} className={`h-4 w-4 ${i < count ? "fill-amber-400 text-amber-400" : "text-slate-300"}`} />
-      ))}
-    </div>
   );
 }
 
 function Reviews() {
   return (
-    <section id="reviews" className="border-y border-slate-200 bg-slate-50 py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading title="What Our Community Says" />
+    <section id="reviews" className="bg-white py-28 sm:py-36">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <SectionIntro eyebrow="Reviews" title="What Our Community Says" className="mb-16 sm:mb-24" />
 
-        <div className="grid gap-12 lg:grid-cols-2">
-          {/* Google reviews */}
-          <div>
-            <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-slate-500">Google Reviews</h3>
-            <div className="space-y-6">
-              {googleReviews.map((r) => (
-                <figure key={r.name} className="border-l-4 border-green-800 bg-white p-6">
-                  <Stars count={r.rating} />
-                  <blockquote className="mt-4 leading-relaxed text-slate-700">&ldquo;{r.text}&rdquo;</blockquote>
-                  <figcaption className="mt-4 font-semibold text-zinc-900">— {r.name}</figcaption>
-                </figure>
+        <div className="grid gap-20 lg:grid-cols-12 lg:gap-16">
+          {/* Reviews */}
+          <div className="lg:sticky lg:top-28 lg:col-span-7 lg:self-start">
+            <span
+              aria-hidden="true"
+              className="-mb-10 block select-none font-serif text-[9rem] leading-none text-[#1e5631]/20 sm:-mb-14 sm:text-[12rem]"
+            >
+              &ldquo;
+            </span>
+            <div className="space-y-16">
+              {googleReviews.map((r, i) => (
+                <Reveal key={r.name} delay={i * 120}>
+                  <figure>
+                    <blockquote className="text-2xl font-medium leading-snug tracking-tight text-[#1d1d1f] sm:text-3xl">
+                      {r.text}
+                    </blockquote>
+                    <figcaption className="mt-6 flex items-center gap-3 text-[#86868b]">
+                      <span className="flex gap-0.5" role="img" aria-label={`${r.rating} out of 5 stars`}>
+                        {Array.from({ length: 5 }).map((_, j) => (
+                          <Star
+                            key={j}
+                            className={`h-4 w-4 ${j < r.rating ? "fill-[#1e5631] text-[#1e5631]" : "text-[#d2d2d7]"}`}
+                          />
+                        ))}
+                      </span>
+                      <span className="font-medium text-[#1d1d1f]">{r.name}</span>
+                      <span>· Google</span>
+                    </figcaption>
+                  </figure>
+                </Reveal>
               ))}
             </div>
           </div>
 
-          {/* Facebook feed */}
-          <div>
-            <h3 className="mb-6 text-sm font-semibold uppercase tracking-wider text-slate-500">
-              Recent Updates
-            </h3>
-            <div className="space-y-6">
+          {/* Facebook updates, styled like iOS widgets */}
+          <div className="lg:col-span-5">
+            <p className="mb-6 text-sm font-semibold uppercase tracking-[0.18em] text-[#86868b]">Recent Updates</p>
+            <div className="space-y-5">
               {facebookPosts.map((post, i) => (
-                <article key={i} className="overflow-hidden rounded-md border border-slate-200 bg-white">
-                  <div className="flex items-center justify-between gap-4 px-5 pt-5">
-                    <p className="font-semibold text-zinc-900">Perkins Lawn and Snow</p>
-                    <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-medium text-slate-500">
-                      <Facebook className="h-3.5 w-3.5 text-blue-600" />
-                      Posted on Facebook
-                    </span>
-                  </div>
-                  <p className="px-5 py-4 text-sm leading-relaxed text-slate-700">{post.text}</p>
-                  {post.src && (
-                    <Photo src={post.src} alt={post.alt} w={800} h={400} position={post.position} className="aspect-[2/1]" />
-                  )}
-                </article>
+                <Reveal key={i} delay={i * 120}>
+                  <article
+                    className={`rounded-3xl bg-[#f5f5f7] p-5 transition-all duration-700 ${EASE} hover:scale-[1.02] hover:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.25)] sm:p-6`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1877f2]">
+                        <Facebook className="h-5 w-5 fill-white text-white" strokeWidth={0} />
+                      </span>
+                      <div className="leading-tight">
+                        <p className="text-sm font-semibold text-[#1d1d1f]">Perkins Lawn and Snow</p>
+                        <p className="text-xs text-[#86868b]">Posted on Facebook</p>
+                      </div>
+                    </div>
+                    <p className="mt-4 text-[15px] leading-relaxed text-[#1d1d1f]">{post.text}</p>
+                    {post.src && (
+                      <Photo
+                        src={post.src}
+                        alt={post.alt}
+                        w={800}
+                        h={450}
+                        position={post.position}
+                        className="mt-4 aspect-video rounded-2xl"
+                      />
+                    )}
+                  </article>
+                </Reveal>
               ))}
               <a
                 href={FACEBOOK_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-semibold text-green-800 hover:text-green-900"
+                className="group inline-flex items-center gap-1 pl-1 font-medium text-[#1e5631] hover:text-[#17452a]"
               >
-                See more on Facebook <ArrowRight className="h-4 w-4" />
+                More on Facebook
+                <ChevronRight className={`h-4 w-4 transition-transform duration-300 ${EASE} group-hover:translate-x-1`} />
               </a>
             </div>
           </div>
@@ -478,7 +605,14 @@ function Reviews() {
 }
 
 const SERVICE_OPTIONS = [
-  ...services.map((s) => s.title),
+  "Lawn Care & Maintenance",
+  "Snow Removal Services",
+  "Mulch Services",
+  "Junk Removal Services",
+  "Pressure Washing",
+  "Concrete Services",
+  "Fertilization Programs",
+  "Aggregate Delivery",
   "Bush & Shrub Trimming",
   "Skid Loader / Grading / Excavating",
   "Hauling & Trucking",
@@ -527,55 +661,55 @@ function QuoteForm() {
 
   if (status === "success") {
     return (
-      <div className="rounded-md border border-slate-200 bg-white p-8 sm:p-10">
-        <CheckCircle2 className="h-10 w-10 text-green-800" />
-        <h3 className="mt-4 text-2xl font-bold text-zinc-900">Thank you!</h3>
-        <p className="mt-2 text-slate-600">
-          Your quote request has been sent. We&rsquo;ll be in touch shortly.
-        </p>
+      <div className="flex h-full flex-col items-start justify-center py-10">
+        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#1e5631]">
+          <Check className="h-7 w-7 text-white" strokeWidth={2.5} />
+        </span>
+        <h3 className="mt-6 text-3xl font-semibold tracking-tight text-[#1d1d1f]">Thank you.</h3>
+        <p className="mt-3 text-lg text-[#6e6e73]">Your request is on its way. We&rsquo;ll be in touch shortly.</p>
         {!EMAIL_CONFIGURED && (
-          <p className="mt-4 text-xs text-amber-700">Demo mode: add your EmailJS keys to send real emails.</p>
+          <p className="mt-4 text-xs text-[#86868b]">Demo mode: add your EmailJS keys to send real emails.</p>
         )}
         <button
           type="button"
           onClick={() => setStatus("idle")}
-          className="mt-6 font-semibold text-green-800 underline-offset-4 hover:underline"
+          className="group mt-8 inline-flex items-center gap-1 font-medium text-[#1e5631]"
         >
           Send another request
+          <ChevronRight className={`h-4 w-4 transition-transform duration-300 ${EASE} group-hover:translate-x-1`} />
         </button>
       </div>
     );
   }
 
-  const field =
-    "mt-1.5 block w-full rounded-md border border-slate-300 bg-white px-3.5 py-2.5 text-zinc-900 placeholder-slate-400 focus:border-green-800 focus:outline-none focus:ring-1 focus:ring-green-800";
-  const label = "block text-sm font-medium text-slate-700";
+  const field = `mt-2 block w-full rounded-xl border-0 bg-white px-4 py-3.5 text-[#1d1d1f] shadow-[0_1px_3px_rgba(0,0,0,0.06)] ring-1 ring-black/[0.04] placeholder:text-[#86868b] transition-shadow duration-300 focus:outline-none focus:ring-2 focus:ring-[#1e5631]`;
+  const label = "block text-sm font-medium text-[#1d1d1f]";
   const loading = status === "loading";
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-md border border-slate-200 bg-white p-6 sm:p-8">
+    <form onSubmit={handleSubmit}>
       <div className="grid gap-5 sm:grid-cols-2">
         <label className={label}>
-          First Name *
+          First Name
           <input name="firstName" required value={form.firstName} onChange={update} className={field} autoComplete="given-name" />
         </label>
         <label className={label}>
-          Last Name *
+          Last Name
           <input name="lastName" required value={form.lastName} onChange={update} className={field} autoComplete="family-name" />
         </label>
         <label className={label}>
-          Email *
+          Email
           <input type="email" name="email" required value={form.email} onChange={update} className={field} autoComplete="email" />
         </label>
         <label className={label}>
-          Phone Number *
+          Phone Number
           <input type="tel" name="phone" required value={form.phone} onChange={update} className={field} autoComplete="tel" />
         </label>
         <label className={`${label} sm:col-span-2`}>
-          Service Requested *
+          Service Requested
           <select name="service" required value={form.service} onChange={update} className={field}>
             <option value="" disabled>
-              Select a service
+              Choose a service
             </option>
             {SERVICE_OPTIONS.map((s) => (
               <option key={s} value={s}>
@@ -585,32 +719,32 @@ function QuoteForm() {
           </select>
         </label>
         <label className={`${label} sm:col-span-2`}>
-          Message
+          Project Details
           <textarea
             name="message"
             rows={5}
             value={form.message}
             onChange={update}
-            className={field}
+            className={`${field} resize-none`}
             placeholder="Tell us about your property and what you need."
           />
         </label>
       </div>
 
       {status === "error" && (
-        <p className="mt-5 flex items-start gap-2 text-sm text-red-700" role="alert">
+        <p className="mt-5 flex items-start gap-2 text-sm text-red-600" role="alert">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          Sorry, we couldn&rsquo;t send your request. Please try again or call {PHONE_DISPLAY}.
+          Something went wrong. Please try again or call {PHONE_DISPLAY}.
         </p>
       )}
 
-      <button type="submit" disabled={loading} className={`${btnPrimary} mt-6 w-full py-3.5 disabled:opacity-70`}>
+      <button type="submit" disabled={loading} className={`${pillPrimary} mt-8 w-full py-4 text-base disabled:opacity-70 sm:w-auto sm:px-10`}>
         {loading ? (
           <>
             <Loader2 className="h-5 w-5 animate-spin" /> Sending…
           </>
         ) : (
-          "Request My Free Quote"
+          "Request Free Quote"
         )}
       </button>
     </form>
@@ -619,47 +753,31 @@ function QuoteForm() {
 
 function Contact() {
   return (
-    <section id="contact" className="bg-white py-20 sm:py-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading
-          title="Get Your Free Quote"
-          intro="Tell us about your project and we'll get back to you with a no-obligation estimate."
-        />
-        <div className="grid gap-12 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <dl className="divide-y divide-slate-200 border-y border-slate-200">
-              <div className="flex gap-4 py-6">
-                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-green-800" />
-                <div>
-                  <dt className="text-sm font-semibold uppercase tracking-wider text-slate-500">Address</dt>
-                  <dd className="mt-1">
-                    <a href={MAPS_HREF} target="_blank" rel="noopener noreferrer" className="text-lg text-zinc-900 hover:text-green-800">
-                      {ADDRESS}
-                    </a>
-                  </dd>
-                </div>
+    <section id="contact" className="bg-white py-28 sm:py-36">
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <Reveal>
+          <div className="grid gap-14 rounded-3xl bg-[#f5f5f7] px-6 py-14 sm:p-14 lg:grid-cols-12 lg:gap-16 lg:p-20">
+            <div className="lg:col-span-5">
+              <h2 className="text-5xl font-semibold tracking-tight text-[#1d1d1f] sm:text-6xl">Get Your Free Quote.</h2>
+              <p className="mt-6 text-xl leading-relaxed text-[#6e6e73]">
+                Tell us about your project. We&rsquo;ll get back to you with a no-obligation estimate.
+              </p>
+              <div className="mt-12 space-y-6">
+                <a href={MAPS_HREF} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-4">
+                  <MapPin className="mt-1 h-5 w-5 shrink-0 text-[#1e5631]" />
+                  <span className="text-lg text-[#1d1d1f] transition-colors group-hover:text-[#1e5631]">{ADDRESS}</span>
+                </a>
+                <a href={PHONE_HREF} className="group flex items-start gap-4">
+                  <Phone className="mt-1 h-5 w-5 shrink-0 text-[#1e5631]" />
+                  <span className="text-lg text-[#1d1d1f] transition-colors group-hover:text-[#1e5631]">{PHONE_DISPLAY}</span>
+                </a>
               </div>
-              <div className="flex gap-4 py-6">
-                <Phone className="mt-0.5 h-5 w-5 shrink-0 text-green-800" />
-                <div>
-                  <dt className="text-sm font-semibold uppercase tracking-wider text-slate-500">Phone</dt>
-                  <dd className="mt-1">
-                    <a href={PHONE_HREF} className="text-lg text-zinc-900 hover:text-green-800">
-                      {PHONE_DISPLAY}
-                    </a>
-                  </dd>
-                </div>
-              </div>
-            </dl>
-            <p className="mt-6 leading-relaxed text-slate-600">
-              Prefer to talk it through? Give us a call. We&rsquo;re happy to answer questions and
-              schedule a time to look at your property.
-            </p>
+            </div>
+            <div className="lg:col-span-7">
+              <QuoteForm />
+            </div>
           </div>
-          <div className="lg:col-span-3">
-            <QuoteForm />
-          </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -667,29 +785,18 @@ function Contact() {
 
 function Footer() {
   return (
-    <footer className="bg-zinc-900 text-slate-400">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-6 px-4 py-10 text-center sm:px-6 md:flex-row md:text-left lg:px-8">
-        <div>
-          <p className="font-semibold text-white">Perkins Lawn and Snow</p>
-          <p className="mt-1 text-sm">
-            {ADDRESS} &middot;{" "}
-            <a href={PHONE_HREF} className="hover:text-white">
-              {PHONE_DISPLAY}
-            </a>
-          </p>
-        </div>
+    <footer className="bg-white">
+      <div className="mx-auto flex max-w-7xl flex-col-reverse items-center justify-between gap-5 border-t border-black/5 px-5 py-10 sm:flex-row sm:px-8">
+        <p className="text-sm text-[#86868b]">&copy; 2023 Perkins Lawn and Snow-All Rights Reserved</p>
         <a
           href={FACEBOOK_URL}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Perkins Lawn and Snow on Facebook"
-          className="flex h-10 w-10 items-center justify-center rounded-md border border-zinc-700 text-slate-300 transition-colors hover:border-green-700 hover:bg-green-800 hover:text-white"
+          className={`flex h-10 w-10 items-center justify-center rounded-full bg-[#f5f5f7] text-[#1d1d1f] transition-all duration-300 ${EASE} hover:scale-105 hover:bg-[#1e5631] hover:text-white`}
         >
-          <Facebook className="h-5 w-5" />
+          <Facebook className="h-[18px] w-[18px]" />
         </a>
-      </div>
-      <div className="border-t border-zinc-800 py-5 text-center text-sm">
-        &copy; 2023 Perkins Lawn and Snow-All Rights Reserved
       </div>
     </footer>
   );
@@ -698,7 +805,7 @@ function Footer() {
 /* ----------------------------- Page --------------------------------- */
 export default function PerkinsLawnAndSnow() {
   return (
-    <div className="min-h-screen bg-white font-sans text-zinc-900 antialiased">
+    <div className="min-h-screen bg-white font-sans text-[#1d1d1f] antialiased selection:bg-[#1e5631] selection:text-white">
       <Header />
       <main>
         <Hero />

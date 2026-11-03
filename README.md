@@ -1,5 +1,8 @@
 # Perkins Lawn and Snow — Website
 
+Apple-inspired single-page site: glass navigation, frosted hero card,
+bento service grid, masonry gallery and soft-grey quote form.
+
 Single-page React + Tailwind CSS site for Perkins Lawn and Snow (Davenport, IA).
 
 - **The entire site is one self-contained component:** `src/PerkinsLawnAndSnow.jsx`. You can paste it straight into a Claude Artifact.
@@ -46,8 +49,8 @@ Everything editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:
 | --- | --- |
 | `heroImage` | Hero background |
 | `aboutImage` | About section photo |
-| `services` | Service cards (title, description, photo) |
-| `galleryImages` | "Our Work" grid; keep the count a multiple of 3 |
+| `services` | Bento service cards. `size` is `large` (2×2, shows a photo), `wide` (2×1) or `small` |
+| `galleryImages` | Masonry gallery. `aspect` is `portrait`, `square` or `landscape` |
 | `facebookPosts` | "Recent Updates" cards (`src: null` for text-only) |
 | `googleReviews` | Review quotes |
 
@@ -57,9 +60,6 @@ is pasted into a Claude Artifact, images fall back to `/api/placeholder`
 automatically, then to a plain grey block.
 `position` is the CSS object-position used when a photo is cropped.
 
-Three service cards use stand-in photos until real ones are available
-(marked `stand-in photo` in the code): Junk Removal, Fertilization Programs
-and Aggregate Delivery.
 
 The header uses the official logo, `public/images/perkins-logo.avif`
 (path set in `LOGO_SRC`). The footer uses plain text, because the logo's
