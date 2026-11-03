@@ -50,6 +50,8 @@ To use a real photo, pass `src`:
 Put the photos in `public/images/`. For gallery items, add a `src` field to the `GALLERY` array and pass it through to the component.
 To remove the text overlay on real photos, delete the label `<div>` in `PlaceholderImage`.
 
-## Social links
+## Reviews & Facebook feed
 
-Replace the `"#"` hrefs in the `SOCIALS` array with the real profile URLs.
+Google reviews live in the `REVIEWS` array and Facebook posts in `FACEBOOK_POSTS`. To add more, append entries there.
+Each post's `image` takes a real photo path; when it is `null`, a labelled placeholder is shown.
+The Facebook page URL is in `FACEBOOK_URL`.

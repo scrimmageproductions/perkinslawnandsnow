@@ -22,9 +22,12 @@ import {
   Award,
   CalendarDays,
   Facebook,
-  Twitter,
-  Linkedin,
-  Instagram,
+  Star,
+  Quote,
+  ThumbsUp,
+  MessageCircle,
+  Share2,
+  Globe,
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ *
@@ -66,6 +69,7 @@ const NAV_LINKS = [
   { label: "About", href: "#about" },
   { label: "Services", href: "#services" },
   { label: "Gallery", href: "#gallery" },
+  { label: "Reviews", href: "#reviews" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -124,11 +128,33 @@ const GALLERY = [
   { label: "Pressure Washing", caption: "Driveway restored to like-new" },
 ];
 
-const SOCIALS = [
-  { label: "Facebook", icon: Facebook, href: "#" },
-  { label: "Twitter", icon: Twitter, href: "#" },
-  { label: "LinkedIn", icon: Linkedin, href: "#" },
-  { label: "Instagram", icon: Instagram, href: "#" },
+const FACEBOOK_URL = "https://www.facebook.com/profile.php?id=100062919445046";
+
+const REVIEWS = [
+  {
+    name: "Dawn Brock",
+    rating: 5,
+    text: "These people did something they normally don't do, but since I am so close, they did... they came and dug out my driveway of snow... I can't say enough about them.. I appreciate it all. Thank you is not enough....you guys are amazing! This teacher appreciates it so much!",
+  },
+  {
+    name: "Dan Michels",
+    rating: 5,
+    text: "I have delt with Jason at Perkins Lawn Care for several years now. From lawns to snow removal, this is the company you need.",
+  },
+];
+
+// Swap `image` for a real photo path (e.g. "/images/fb-driveway.jpg") when available.
+const FACEBOOK_POSTS = [
+  {
+    text: "Another massive driveway cleared and salted before the morning commute! ❄️ We take pride in making sure our Davenport neighbors can get out safely, no matter how much snow drops overnight. Give us a call to get on our route!",
+    imageLabel: "Facebook Post — Cleared Driveway",
+    image: null,
+  },
+  {
+    text: "Spring cleanup in full swing! 🌱 Check out the sharp edges and fresh mulch on this property. We love transforming a winter-weary yard into a pristine outdoor space. Quality work is always our top priority.",
+    imageLabel: "Facebook Post — Spring Cleanup",
+    image: null,
+  },
 ];
 
 /* --------------------------- Helpers ------------------------------- */
@@ -468,6 +494,154 @@ function Gallery() {
   );
 }
 
+
+function Stars({ count }) {
+  return (
+    <div className="flex gap-0.5" aria-label={`${count} out of 5 stars`}>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          className={`h-5 w-5 ${i < count ? "fill-amber-400 text-amber-400" : "text-slate-300"}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function ReviewCard({ name, rating, text }) {
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .join("");
+  return (
+    <figure className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+      <Quote className="absolute right-6 top-6 h-10 w-10 text-green-100" />
+      <Stars count={rating} />
+      <blockquote className="mt-4 leading-relaxed text-slate-700">&ldquo;{text}&rdquo;</blockquote>
+      <figcaption className="mt-6 flex items-center gap-3">
+        <span className="flex h-11 w-11 items-center justify-center rounded-full bg-green-800 font-bold text-white">
+          {initials}
+        </span>
+        <span>
+          <span className="block font-semibold text-zinc-900">{name}</span>
+          <span className="flex items-center gap-1 text-sm text-slate-500">
+            <Globe className="h-3.5 w-3.5" /> Google Review
+          </span>
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
+
+function FacebookPostCard({ text, imageLabel, image }) {
+  return (
+    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <header className="flex items-center gap-3 px-5 pt-5">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-green-800 text-white">
+          <Leaf className="h-5 w-5" />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-semibold text-zinc-900">Perkins Lawn and Snow</p>
+          <p className="flex items-center gap-1 text-xs text-slate-500">
+            <Facebook className="h-3.5 w-3.5 text-blue-600" /> Posted on Facebook
+          </p>
+        </div>
+      </header>
+      <p className="px-5 py-4 text-sm leading-relaxed text-slate-700">{text}</p>
+      <PlaceholderImage width={600} height={340} label={imageLabel} src={image || undefined} className="aspect-[2/1]" />
+      <footer className="grid grid-cols-3 border-t border-slate-200 text-sm font-medium text-slate-500">
+        {[
+          [ThumbsUp, "Like"],
+          [MessageCircle, "Comment"],
+          [Share2, "Share"],
+        ].map(([Icon, label]) => (
+          <a
+            key={label}
+            href={FACEBOOK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1.5 py-3 transition-colors hover:bg-slate-50 hover:text-green-800"
+          >
+            <Icon className="h-4 w-4" /> {label}
+          </a>
+        ))}
+      </footer>
+    </article>
+  );
+}
+
+function Reviews() {
+  return (
+    <section id="reviews" className="bg-slate-100 py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <SectionHeading
+          eyebrow="Reviews & Updates"
+          title="What Our Community Says"
+          subtitle="Real words from our neighbors, plus the latest from our crew."
+        />
+
+        <div className="grid gap-10 lg:grid-cols-2">
+          {/* Customer reviews */}
+          <div>
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <h3 className="text-xl font-bold text-zinc-900">Customer Reviews</h3>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-slate-200">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-400" /> 5-Star Google Reviews
+              </span>
+            </div>
+            <div className="space-y-6">
+              {REVIEWS.map((r) => (
+                <ReviewCard key={r.name} {...r} />
+              ))}
+              <div className="rounded-2xl bg-green-800 p-6 text-white shadow-sm sm:p-8">
+                <h4 className="text-xl font-bold">Join our happy neighbors</h4>
+                <p className="mt-2 text-green-100">
+                  Lawn care, snow removal and everything in between: get a free,
+                  no-obligation quote today.
+                </p>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                  <a
+                    href="#contact"
+                    className="inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 font-semibold text-green-800 transition-colors hover:bg-green-50"
+                  >
+                    Get a Free Quote <ArrowRight className="h-4 w-4" />
+                  </a>
+                  <a
+                    href={PHONE_HREF}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white/60 px-5 py-3 font-semibold text-white transition-colors hover:bg-white/10"
+                  >
+                    <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Facebook feed */}
+          <div>
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <h3 className="text-xl font-bold text-zinc-900">Recent Updates</h3>
+              <a
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
+              >
+                <Facebook className="h-4 w-4" /> Follow us
+              </a>
+            </div>
+            <div className="space-y-6">
+              {FACEBOOK_POSTS.map((p) => (
+                <FacebookPostCard key={p.imageLabel} {...p} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 const SERVICE_OPTIONS = [
   ...SERVICES.map((s) => s.title),
   "Bush & Shrub Trimming",
@@ -711,16 +885,15 @@ function Footer() {
         </div>
 
         <div className="flex gap-3">
-          {SOCIALS.map(({ label, icon: Icon, href }) => (
-            <a
-              key={label}
-              href={href}
-              aria-label={label}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-800 text-slate-300 transition-colors hover:bg-green-800 hover:text-white"
-            >
-              <Icon className="h-5 w-5" />
-            </a>
-          ))}
+          <a
+            href={FACEBOOK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Perkins Lawn and Snow on Facebook"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-800 text-slate-300 transition-colors hover:bg-green-800 hover:text-white"
+          >
+            <Facebook className="h-5 w-5" />
+          </a>
         </div>
       </div>
       <p className="mt-8 text-center text-sm text-slate-500">
@@ -745,6 +918,7 @@ export default function PerkinsLawnAndSnow() {
         <About />
         <Services />
         <Gallery />
+        <Reviews />
         <Contact />
       </main>
       <Footer />
