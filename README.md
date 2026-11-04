@@ -1,7 +1,7 @@
 # Perkins Lawn and Snow — Website
 
 Apple-inspired single-page site: glass navigation, frosted hero card,
-bento service grid, masonry gallery and soft-grey quote form.
+text-and-icon service grid, masonry gallery and soft-grey quote form.
 
 Single-page React + Tailwind CSS site for Perkins Lawn and Snow (Davenport, IA).
 
@@ -49,12 +49,14 @@ Claude Artifact on its own). `SLIDE_DURATION_MS`, `FADE_MS` and `ZOOM_SCALE` con
 the timing and zoom. The logo in the hero card comes from `logoUrl`. The slideshow has a pause button and does not auto-advance for
 visitors who have reduced motion turned on.
 
+Service cards (text and icons only) are in `services` at the top of
+`src/ServicesSection.jsx`, another standalone component.
+
 Everything else editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:
 
 | Array | Controls |
 | --- | --- |
 | `aboutImage` | About section photo |
-| `services` | Bento service cards. `size` is `large` (2×2, shows a photo), `wide` (2×1) or `small` |
 | `galleryImages` | Masonry gallery. `aspect` is `portrait`, `square` or `landscape` |
 | `facebookPosts` | "Recent Updates" cards (`src: null` for text-only) |
 | `googleReviews` | Review quotes |

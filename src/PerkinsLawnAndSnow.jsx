@@ -1,15 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
 import HeroSlideshow from "./HeroSlideshow.jsx"; // hero photos are set in HeroSlideshow.jsx
+import ServicesSection from "./ServicesSection.jsx"; // services are set in ServicesSection.jsx
 import {
-  Leaf,
-  Snowflake,
-  Shovel,
-  Trash2,
-  Droplets,
-  BrickWall,
-  Sprout,
-  Truck,
   Phone,
   MapPin,
   Menu,
@@ -49,45 +42,6 @@ const aboutImage = {
   position: "65% center",
 };
 
-// Bento grid. `size`: "large" (2×2, shows a photo), "wide" (2×1) or "small" (1×1).
-// The order below is tuned so the grid packs cleanly on desktop.
-const services = [
-  {
-    title: "Lawn Care & Maintenance",
-    text: "Precision mowing, edging and trimming. Every week, all season.",
-    icon: Leaf,
-    size: "large",
-    src: "/images/trimming-edging.avif", // ← REPLACE
-    position: "60% center",
-  },
-  { title: "Mulch", text: "Fresh beds. Clean edges. Instant curb appeal.", icon: Shovel, size: "small" },
-  { title: "Fertilization", text: "Seasonal programs for thicker, greener turf.", icon: Sprout, size: "small" },
-  { title: "Pressure Washing", text: "Driveways, patios and siding, restored to like-new.", icon: Droplets, size: "small" },
-  { title: "Junk Removal", text: "Yard debris, old furniture, construction waste. Gone.", icon: Trash2, size: "small" },
-  {
-    title: "Concrete",
-    text: "Pads, walkways and driveways, poured and finished with care.",
-    icon: BrickWall,
-    size: "wide",
-  },
-  {
-    title: "Snow Removal",
-    text: "Plowed, shoveled and salted before your morning commute.",
-    icon: Snowflake,
-    size: "large",
-    src: "/images/snow-clearing-lot.avif", // ← REPLACE
-    position: "75% center",
-  },
-  {
-    title: "Aggregate Delivery",
-    text: "Rock, gravel, sand and black dirt, delivered right where you need it.",
-    icon: Truck,
-    size: "wide",
-  },
-];
-
-const EXTRA_SERVICES =
-  "Bush & shrub trimming, skid loader work, grading, light excavating, hauling, trucking, house cleanouts, storage cleanouts, and more.";
 
 const galleryImages = [
   // ← REPLACE / ADD: { src, caption, aspect, position? }
@@ -352,88 +306,6 @@ function About() {
             </div>
           </Reveal>
         </div>
-      </div>
-    </section>
-  );
-}
-
-const SIZE_CLASSES = {
-  large: "sm:col-span-2 lg:row-span-2",
-  wide: "sm:col-span-2",
-  small: "",
-};
-
-function ServiceCard({ service }) {
-  const { title, text, icon: Icon, size, src, position } = service;
-  const large = size === "large";
-
-  if (size === "wide") {
-    return (
-      <article
-        className={`group relative flex h-full items-end overflow-hidden rounded-3xl bg-[#f5f5f7] p-8 transition-all duration-700 ${EASE} hover:scale-[1.02] hover:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.28)] sm:p-10`}
-      >
-        <Icon
-          aria-hidden="true"
-          strokeWidth={1}
-          className={`pointer-events-none absolute -right-6 -top-6 h-48 w-48 text-[#1e5631]/[0.07] transition-transform duration-1000 ${EASE} group-hover:-rotate-6 group-hover:scale-110`}
-        />
-        <div className="relative max-w-sm">
-          <Icon className="h-8 w-8 text-[#1e5631]" strokeWidth={1.6} />
-          <h3 className="mt-6 text-2xl font-semibold tracking-tight text-[#1d1d1f]">{title}</h3>
-          <p className="mt-3 leading-relaxed text-[#6e6e73]">{text}</p>
-        </div>
-      </article>
-    );
-  }
-
-  return (
-    <article
-      className={`group flex h-full flex-col overflow-hidden rounded-3xl bg-[#f5f5f7] p-8 transition-all duration-700 ${EASE} hover:scale-[1.02] hover:shadow-[0_24px_60px_-28px_rgba(0,0,0,0.28)] sm:p-10`}
-    >
-      <Icon className="h-8 w-8 text-[#1e5631]" strokeWidth={1.6} />
-      <h3 className={`mt-6 font-semibold tracking-tight text-[#1d1d1f] ${large ? "text-3xl sm:text-4xl" : "text-2xl"}`}>
-        {title}
-      </h3>
-      <p className={`mt-3 leading-relaxed text-[#6e6e73] ${large ? "text-lg" : ""}`}>{text}</p>
-      {large && src && (
-        <Photo
-          src={src}
-          alt={title}
-          w={900}
-          h={600}
-          position={position}
-          className="mt-8 aspect-[3/2] rounded-2xl lg:aspect-auto lg:min-h-[240px] lg:flex-1"
-          imgClassName={`transition-transform duration-1000 ${EASE} group-hover:scale-105`}
-        />
-      )}
-    </article>
-  );
-}
-
-function Services() {
-  return (
-    <section id="services" className="bg-white py-28 sm:py-36">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <SectionIntro
-          eyebrow="Services"
-          title="Everything your property needs. All year."
-          intro="From the first mow of spring to the last plow of winter, one local crew handles it all."
-          className="mb-16 sm:mb-20"
-        />
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[minmax(260px,auto)]">
-          {services.map((s, i) => (
-            <Reveal key={s.title} delay={(i % 4) * 80} className={SIZE_CLASSES[s.size]}>
-              <ServiceCard service={s} />
-            </Reveal>
-          ))}
-        </div>
-
-        <Reveal className="mx-auto mt-16 max-w-3xl text-center">
-          <p className="text-lg leading-relaxed text-[#6e6e73]">
-            <span className="font-medium text-[#1d1d1f]">We also offer:</span> {EXTRA_SERVICES}
-          </p>
-        </Reveal>
       </div>
     </section>
   );
@@ -769,7 +641,7 @@ export default function PerkinsLawnAndSnow() {
       <main>
         <HeroSlideshow />
         <About />
-        <Services />
+        <ServicesSection />
         <Gallery />
         <Reviews />
         <Contact />
