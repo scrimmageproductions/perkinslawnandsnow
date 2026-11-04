@@ -49,7 +49,7 @@ Claude Artifact on its own). `SLIDE_DURATION_MS`, `FADE_MS` and `ZOOM_SCALE` con
 the timing and zoom. The logo in the hero card comes from `logoUrl`. The slideshow has a pause button and does not auto-advance for
 visitors who have reduced motion turned on.
 
-Service cards (text and icons only) are in `services` at the top of
+Service cards (text-and-icon bento grid; each card has a `variant` for size and colour) are in `services` at the top of
 `src/ServicesSection.jsx`, another standalone component.
 
 Everything else editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:
