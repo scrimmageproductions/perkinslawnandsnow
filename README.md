@@ -45,8 +45,8 @@ If the keys are missing, the form runs in **demo mode**. It still shows the load
 
 Hero slideshow photos are in `heroSlideshowImages` at the top of
 `src/HeroSlideshow.jsx` (a standalone component you can also paste into a
-Claude Artifact on its own). `SLIDE_DURATION_MS` and `FADE_MS` control the
-timing. The slideshow has a pause button and does not auto-advance for
+Claude Artifact on its own). `SLIDE_DURATION_MS`, `FADE_MS` and `ZOOM_SCALE` control
+the timing and zoom. The logo in the hero card comes from `logoUrl`. The slideshow has a pause button and does not auto-advance for
 visitors who have reduced motion turned on.
 
 Everything else editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:

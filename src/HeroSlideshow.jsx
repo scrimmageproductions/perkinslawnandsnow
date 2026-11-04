@@ -15,8 +15,16 @@ import { ChevronRight, Pause, Play } from "lucide-react";
  *  Every slide uses object-cover, so photos of any shape fill the screen
  *  without stretching or letterboxing. `position` (CSS object-position)
  *  picks which part of the photo stays in view when it is cropped, e.g.
- *  "center 40%" keeps a bit more of the top of a tall photo.
+ *  "center 40%" keeps a bit more of the top of a tall photo, "center 25%"
+ *  moves the crop down so something near the top (like a sign) isn't
+ *  hidden behind the navigation bar.
  * ==================================================================== */
+
+// ← REPLACE: path to the logo shown at the top of the hero card.
+// Falls back to /api/placeholder/400/100 if the file can't be loaded.
+const logoUrl = "/images/perkins-logo.avif";
+const LOGO_PLACEHOLDER = "/api/placeholder/400/100";
+
 const heroSlideshowImages = [
   {
     src: "/images/hero-lawn-mowing.avif", // ← REPLACE
@@ -97,8 +105,9 @@ const heroSlideshowImages = [
   },
 ];
 
-const SLIDE_DURATION_MS = 5500; // time each photo stays on screen
-const FADE_MS = 1800; // length of the crossfade
+const SLIDE_DURATION_MS = 3800; // time each photo stays on screen (3.5–4s)
+const FADE_MS = 1200; // length of the crossfade
+const ZOOM_SCALE = 1.08; // how far each photo slowly zooms in while visible
 
 const GREEN = "#1e5631";
 const EASE = "ease-[cubic-bezier(0.22,1,0.36,1)]";
@@ -107,6 +116,24 @@ const EASE = "ease-[cubic-bezier(0.22,1,0.36,1)]";
 function Slide({ slide, active, eager, zoom, load }) {
   const placeholder = `/api/placeholder/${slide.w}/${slide.h}`;
   const [src, setSrc] = useState(slide.src || placeholder);
+
+  // Start the zoom one frame after the slide becomes active so the browser
+  // animates from scale(1) instead of jumping straight to the end.
+  const [zoomed, setZoomed] = useState(false);
+  useEffect(() => {
+    if (!active || !zoom) {
+      setZoomed(false);
+      return;
+    }
+    let inner;
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => setZoomed(true));
+    });
+    return () => {
+      cancelAnimationFrame(outer);
+      cancelAnimationFrame(inner);
+    };
+  }, [active, zoom]);
 
   return (
     <div
@@ -125,11 +152,13 @@ function Slide({ slide, active, eager, zoom, load }) {
           className="h-full w-full object-cover"
           style={{
             objectPosition: slide.position || "center",
-            // Slow "Ken Burns" drift on the visible slide; off for reduced motion.
-            transform: zoom && active ? "scale(1)" : "scale(1.08)",
-            transition: zoom
+            // Slow, continuous zoom-in while visible (off for reduced motion).
+            // When the slide leaves, it holds its zoom until the fade-out
+            // finishes, then resets invisibly.
+            transform: zoomed ? `scale(${ZOOM_SCALE})` : "scale(1)",
+            transition: zoomed
               ? `transform ${SLIDE_DURATION_MS + FADE_MS}ms linear`
-              : "none",
+              : `transform 0ms linear ${FADE_MS}ms`,
           }}
         />
       )}
@@ -142,6 +171,8 @@ export default function HeroSlideshow({ slides = heroSlideshowImages }) {
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [logoSrc, setLogoSrc] = useState(logoUrl || LOGO_PLACEHOLDER);
+  const [logoFailed, setLogoFailed] = useState(false);
   const count = slides.length;
 
   // Download photos only as they're needed: the current slide, the next one,
@@ -237,14 +268,33 @@ export default function HeroSlideshow({ slides = heroSlideshowImages }) {
       {/* Static frosted-glass card — never moves with the slides */}
       <div className="mx-auto flex h-full max-w-7xl items-end px-5 pb-10 pt-28 sm:px-8 sm:pb-16">
         <div
-          className={`w-full max-w-2xl rounded-3xl bg-white/70 p-8 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)] ring-1 ring-white/40 backdrop-blur-lg backdrop-saturate-150 transition-all duration-1000 ${EASE} motion-reduce:transition-none sm:p-12 ${
+          className={`w-full max-w-xl rounded-3xl bg-white/70 p-8 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.35)] ring-1 ring-white/40 backdrop-blur-lg backdrop-saturate-150 transition-all duration-1000 ${EASE} motion-reduce:transition-none sm:p-12 ${
             mounted ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
           }`}
         >
-          <h1 className="text-5xl font-bold leading-[1.02] tracking-tight text-[#1d1d1f] sm:text-6xl lg:text-7xl">
-            Welcome to Perkins Lawn and Snow.
+          {/* Logo doubles as the page's main heading for search engines and screen readers */}
+          <h1 className="m-0">
+            {logoFailed ? (
+              <span className="text-4xl font-bold tracking-tight text-[#1d1d1f] sm:text-5xl">
+                Perkins Lawn and Snow
+              </span>
+            ) : (
+              <img
+                src={logoSrc}
+                alt="Perkins Lawn and Snow"
+                width={606}
+                height={196}
+                fetchPriority="high"
+                onError={() =>
+                  logoSrc !== LOGO_PLACEHOLDER
+                    ? setLogoSrc(LOGO_PLACEHOLDER)
+                    : setLogoFailed(true)
+                }
+                className="h-auto w-56 max-w-full sm:w-72 lg:w-80"
+              />
+            )}
           </h1>
-          <p className="mt-5 text-lg leading-relaxed text-[#6e6e73] sm:text-xl">
+          <p className="mt-6 text-xl font-medium leading-snug tracking-tight text-[#6e6e73] sm:text-2xl">
             Professional Lawn Care &amp; Snow Removal in Davenport, IA.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4">
