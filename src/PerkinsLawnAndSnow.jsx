@@ -295,7 +295,7 @@ function Header() {
 /* "Fresh cut" reveal for the SINCE THE 1980s header: a sharp vertical edge
  * sweeps left to right (like a mower cutting a clean path), revealing the
  * text behind it. Pure clip-path + a hairline; no literal grass or icons. */
-const CUT_DURATION = 1.8; // seconds for the edge to cross the text
+const CUT_DURATION = 3.0; // seconds for the edge to cross the text (slow and deliberate)
 const CUT_EASE = [0.65, 0, 0.35, 1]; // smooth start and finish, steady through the middle
 
 function FreshCutReveal({ children, className = "" }) {
@@ -351,10 +351,11 @@ function About() {
   const headerY = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-70, 70]);
 
   return (
-    <section ref={sectionRef} id="about" className="relative overflow-hidden bg-white py-28 sm:py-36">
-      {/* Massive ultra-light background header: scroll-linked parallax +
-          a left-to-right "fresh cut" reveal when it enters the viewport */}
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+    <section ref={sectionRef} id="about" className="relative overflow-hidden bg-white pb-28 sm:pb-36">
+      {/* Dedicated full-width header band: "SINCE THE 1980s" sits on its own in
+          open white space above the grid, with scroll-linked parallax and a
+          left-to-right "fresh cut" reveal when it enters the viewport. */}
+      <div className="flex w-full justify-center overflow-hidden px-5 pb-16 pt-32 sm:px-8 sm:pb-20 sm:pt-40">
         <motion.div style={{ y: headerY }} className="pointer-events-none select-none will-change-transform">
           <FreshCutReveal>
             <p className="text-[17vw] font-extralight leading-[0.85] tracking-[-0.04em] text-[#1d1d1f]/[0.09] sm:whitespace-nowrap sm:text-[clamp(3.25rem,11vw,10rem)]">
@@ -365,7 +366,7 @@ function About() {
         </motion.div>
       </div>
 
-      <div className="relative mx-auto mt-6 grid max-w-7xl gap-14 px-5 sm:-mt-10 sm:px-8 lg:-mt-16 lg:grid-cols-12 lg:gap-10">
+      <div className="relative mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-12 lg:gap-10">
         <div className="relative isolate lg:col-span-5">
           {/* Hometown texture: faint grayscale Davenport street map behind the heading */}
           <div
