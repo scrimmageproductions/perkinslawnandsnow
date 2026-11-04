@@ -36,9 +36,19 @@ const LOGO_SRC = "/images/perkins-logo.avif"; // official Perkins Lawn & Snow lo
 
 // ← REPLACE: street map of Davenport, IA shown faintly behind the About heading.
 // Any image works (JPG/PNG/SVG/AVIF in /public/images, e.g. "/images/davenport-map.png").
-// It is automatically converted to grayscale and shown at 10% opacity, with
-// soft faded edges, so a full-color map export is fine.
-const davenportMapUrl = "/api/placeholder/800/800";
+// It is automatically converted to grayscale and shown at 15% opacity, with
+// softly faded edges, so a full-color map export is fine.
+// TEMPORARY test image (generic map photo from Unsplash) so the texture is visible
+// during development. Swap for a real Davenport street map before launch.
+const davenportMapUrl =
+  "https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop";
+
+// Fade only the outer ~18% on each side; the middle of the map stays at full
+// strength. Two linear masks are intersected so all four edges fade evenly.
+const MAP_EDGE_FADE = [
+  "linear-gradient(to right, transparent 0%, #000 18%, #000 82%, transparent 100%)",
+  "linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%)",
+].join(", ");
 
 const aboutImage = {
   src: "/images/perkins-truck-logo.avif", // ← REPLACE: e.g. Jason & Shannon, or the crew
@@ -284,12 +294,14 @@ function About() {
           {/* Hometown texture: faint grayscale Davenport street map behind the heading */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-x-5 -inset-y-10 -z-10 bg-cover bg-center opacity-10 grayscale sm:-inset-x-8 lg:inset-x-0 lg:-inset-y-12"
+            className="pointer-events-none absolute -inset-x-5 -inset-y-10 -z-10 bg-cover bg-center opacity-[0.15] grayscale sm:-inset-x-8 lg:inset-x-0 lg:-inset-y-12"
             style={{
               backgroundImage: `url("${davenportMapUrl}")`,
-              // Fade the map out toward its edges so there's no hard rectangle.
-              WebkitMaskImage: "radial-gradient(ellipse 70% 62% at 50% 50%, #000 35%, transparent 100%)",
-              maskImage: "radial-gradient(ellipse 70% 62% at 50% 50%, #000 35%, transparent 100%)",
+              // Fade only the outer edges so the map blends into the white background.
+              WebkitMaskImage: MAP_EDGE_FADE,
+              WebkitMaskComposite: "source-in",
+              maskImage: MAP_EDGE_FADE,
+              maskComposite: "intersect",
             }}
           />
           <div className="relative z-10 lg:pt-10">
