@@ -7,39 +7,33 @@ Single-page React + Tailwind CSS site for Perkins Lawn and Snow (Davenport, IA).
 
 - **The entire site is one self-contained component:** `src/PerkinsLawnAndSnow.jsx`. You can paste it straight into a Claude Artifact.
 - Icons: `lucide-react`
-- Quote form email: [EmailJS](https://www.emailjs.com), sent from the browser, so no server is needed.
+- Quote form email: Resend, via the `/api/send-quote` serverless function.
 
 ## Run locally
 
 ```bash
 npm install
-cp .env.example .env   # then fill in EmailJS keys
+cp .env.example .env   # then add your Resend API key
 npm run dev
 ```
 
 `npm run build` writes a static site to `dist/`. You can deploy it to Netlify, Vercel, GitHub Pages, or any static host.
-On the host, set the three `VITE_EMAILJS_*` variables as environment variables.
+On the host, set `RESEND_API_KEY` (and `QUOTE_TO_EMAIL`) as environment variables.
 
-## Setting up quote emails (EmailJS)
+## Quote form email (Resend)
 
-1. Create a free EmailJS account and add an **Email Service** that is connected to the Perkins inbox.
-2. Create an **Email Template** and set:
-   - **To Email**: the Perkins inbox
-   - **Reply To**: `{{reply_to}}`
-   - **Subject**: `New quote request: {{service}} — {{from_name}}`
-   - **Body** (example):
-     ```
-     Name: {{first_name}} {{last_name}}
-     Email: {{reply_to}}
-     Phone: {{phone}}
-     Service: {{service}}
-     Submitted: {{submitted_at}}
+The quote form posts to `/api/send-quote` (`api/send-quote.js`), which emails
+the request to the Perkins team through [Resend](https://resend.com).
 
-     {{message}}
-     ```
-3. Copy the Service ID, Template ID and Public Key into `.env`.
-
-If the keys are missing, the form runs in **demo mode**. It still shows the loading and success states, but no email is sent.
+- **Local:** put `RESEND_API_KEY` (and optionally `QUOTE_TO_EMAIL`) in `.env`
+  (see `.env.example`). `npm run dev` serves the API route too.
+- **Production (Vercel):** add the same variables under Project → Settings →
+  Environment Variables. Vercel runs `api/send-quote.js` as a serverless function.
+  Other static hosts (e.g. GitHub Pages) can't run it.
+- **Sender address:** `onboarding@resend.dev` only delivers to the email on your
+  Resend account. To deliver to `info@perkinslawnandsnow.com`, verify the domain in
+  Resend and set `QUOTE_FROM_EMAIL` to an address on it.
+- A hidden `botField` honeypot blocks simple spam bots.
 
 ## Editing photos and content
 

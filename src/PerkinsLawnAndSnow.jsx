@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import emailjs from "@emailjs/browser";
 import {
   animate,
   motion,
@@ -111,26 +110,10 @@ const googleReviews = [
 ];
 
 /* ==================================================================== *
- *  EMAIL — EmailJS (client-side, no server needed)
- *
- *  1. Create a free account at https://www.emailjs.com
- *  2. Add an Email Service connected to the Perkins inbox → Service ID
- *  3. Create a template using:
- *       {{first_name}} {{last_name}} {{from_name}} {{reply_to}}
- *       {{phone}} {{service}} {{message}} {{submitted_at}}
- *     Set "To Email" to the Perkins inbox and "Reply To" to {{reply_to}}
- *     → Template ID
- *  4. Account → General → Public Key
- *  5. Put the values in .env (see .env.example) or paste them below.
- *
- *  Without keys the form runs in DEMO MODE: it shows the loading and
- *  success states but sends nothing.
+ *  EMAIL — the quote form posts to /api/send-quote (api/send-quote.js),
+ *  which emails the request to the Perkins team through Resend.
  * ==================================================================== */
-const env = (typeof import.meta !== "undefined" && import.meta.env) || {};
-const EMAILJS_SERVICE_ID = env.VITE_EMAILJS_SERVICE_ID || "";
-const EMAILJS_TEMPLATE_ID = env.VITE_EMAILJS_TEMPLATE_ID || "";
-const EMAILJS_PUBLIC_KEY = env.VITE_EMAILJS_PUBLIC_KEY || "";
-const EMAIL_CONFIGURED = Boolean(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY);
+const QUOTE_ENDPOINT = "/api/send-quote";
 
 /* ----------------------------- Business info ------------------------ */
 const PHONE_DISPLAY = "(563) 676-8052";
@@ -584,33 +567,32 @@ function QuoteForm() {
 
   const update = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus("loading");
+    setErrorMessage("");
 
-    const params = {
-      first_name: form.firstName.trim(),
-      last_name: form.lastName.trim(),
-      from_name: `${form.firstName} ${form.lastName}`.trim(),
-      reply_to: form.email.trim(),
-      email: form.email.trim(),
-      phone: form.phone.trim(),
-      service: form.service,
-      message: form.message.trim() || "(no details provided)",
-      submitted_at: new Date().toLocaleString("en-US", { timeZone: "America/Chicago" }),
-    };
+    // Gather everything in the form, including the hidden honeypot field.
+    const formEl = e.currentTarget; // captured now: React clears currentTarget after the await
+    const payload = Object.fromEntries(new FormData(formEl).entries());
 
     try {
-      if (EMAIL_CONFIGURED) {
-        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params, { publicKey: EMAILJS_PUBLIC_KEY });
-      } else {
-        console.info("[Demo mode] Quote request (EmailJS not configured):", params);
-        await new Promise((r) => setTimeout(r, 1200));
-      }
-      setStatus("success");
+      const res = await fetch(QUOTE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(result.error || `Request failed (${res.status})`);
+
       setForm(EMPTY_FORM);
+      formEl.reset();
+      setStatus("success");
     } catch (err) {
       console.error("Quote submission failed:", err);
+      setErrorMessage(err.message);
       setStatus("error");
     }
   };
@@ -623,9 +605,6 @@ function QuoteForm() {
         </span>
         <h3 className="mt-6 text-3xl font-semibold tracking-tight text-[#1d1d1f]">Thank you.</h3>
         <p className="mt-3 text-lg text-[#6e6e73]">Your request is on its way. We&rsquo;ll be in touch shortly.</p>
-        {!EMAIL_CONFIGURED && (
-          <p className="mt-4 text-xs text-[#86868b]">Demo mode: add your EmailJS keys to send real emails.</p>
-        )}
         <button
           type="button"
           onClick={() => setStatus("idle")}
@@ -644,6 +623,8 @@ function QuoteForm() {
 
   return (
     <form onSubmit={handleSubmit}>
+      {/* Honeypot: hidden from people, but bots fill it in. The API rejects any submission where it has a value. */}
+      <input type="text" name="botField" className="hidden" tabIndex="-1" autoComplete="off" aria-hidden="true" />
       <div className="grid gap-5 sm:grid-cols-2">
         <label className={label}>
           First Name
@@ -690,7 +671,7 @@ function QuoteForm() {
       {status === "error" && (
         <p className="mt-5 flex items-start gap-2 text-sm text-red-600" role="alert">
           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-          Something went wrong. Please try again or call {PHONE_DISPLAY}.
+          {errorMessage || "Something went wrong."} Please try again or call {PHONE_DISPLAY}.
         </p>
       )}
 
