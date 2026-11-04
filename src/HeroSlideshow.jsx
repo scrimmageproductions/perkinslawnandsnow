@@ -25,7 +25,9 @@ import { ChevronRight, Pause, Play } from "lucide-react";
 const logoUrl = "/images/perkins-logo.avif";
 const LOGO_PLACEHOLDER = "/api/placeholder/400/100";
 
-const heroSlideshowImages = [
+// Also feeds the "Our work speaks for itself." gallery (PerkinsLawnAndSnow.jsx),
+// so adding or swapping a photo here updates both.
+export const heroSlideshowImages = [
   {
     src: "/images/hero-lawn-mowing.avif", // ← REPLACE
     alt: "Lawn being mowed, seen from above",

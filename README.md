@@ -57,7 +57,7 @@ Everything else editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:
 | Array | Controls |
 | --- | --- |
 | `aboutImage` | About section photo |
-| `galleryImages` | Masonry gallery. `aspect` is `portrait`, `square` or `landscape` |
+| `galleryImages` | Gallery grid. Built automatically from `heroSlideshowImages`, so it always shows the same photos as the hero. Wide photos are listed in `WIDE_PHOTOS` and span two columns |
 | `facebookPosts` | "Recent Updates" cards (`src: null` for text-only) |
 | `googleReviews` | Review quotes |
 

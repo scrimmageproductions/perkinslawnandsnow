@@ -83,18 +83,16 @@ const SPAN = {
   tile: "",
 };
 
-const pad = (n) => String(n).padStart(2, "0");
-
 /* ----------------------------- Cards -------------------------------- */
 
 /** Large 2×2 card on a dark material. Typography is the hero. */
-function FeatureCard({ service, index }) {
+function FeatureCard({ service }) {
   const { title, description, tags = [], icon: Icon, variant } = service;
   const isGreen = variant === "feature-green";
 
   return (
     <article
-      className={`group relative isolate flex h-full min-h-[420px] flex-col overflow-hidden rounded-3xl p-8 text-white sm:p-10 lg:min-h-0 lg:p-12`}
+      className={`group relative isolate flex h-full min-h-[420px] flex-col overflow-hidden rounded-3xl p-8 text-white sm:p-10 lg:min-h-0 xl:p-12`}
       style={{ backgroundColor: isGreen ? GREEN : CHARCOAL }}
     >
       {/* Oversized watermark icon, offset off the bottom-right corner */}
@@ -124,16 +122,15 @@ function FeatureCard({ service, index }) {
         >
           <Icon className="h-7 w-7" strokeWidth={1.75} />
         </span>
-        <span className="font-mono text-sm tabular-nums text-white/50">{pad(index + 1)}</span>
       </div>
 
-      <div className="mt-auto pt-16">
-        <h3 className="max-w-md text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl lg:text-6xl">
+      <div className="mt-auto pt-16 lg:pt-8 xl:pt-16">
+        <h3 className="max-w-md text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl xl:text-6xl">
           {title}
         </h3>
-        <p className="mt-5 max-w-md text-lg leading-relaxed text-white/75">{description}</p>
+        <p className="mt-5 max-w-md text-lg leading-relaxed text-white/75 lg:mt-4 lg:text-base xl:mt-5 xl:text-lg">{description}</p>
         {tags.length > 0 && (
-          <ul className="mt-8 flex flex-wrap gap-2">
+          <ul className="mt-8 flex flex-wrap gap-2 lg:mt-6 xl:mt-8">
             {tags.map((t) => (
               <li
                 key={t}
@@ -150,7 +147,7 @@ function FeatureCard({ service, index }) {
 }
 
 /** 2×1 off-white card: text left, large faint icon anchored right. */
-function WideCard({ service, index }) {
+function WideCard({ service }) {
   const { title, description, icon: Icon } = service;
   return (
     <article
@@ -161,9 +158,6 @@ function WideCard({ service, index }) {
         strokeWidth={0.9}
         className={`pointer-events-none absolute -right-6 top-1/2 -z-10 h-56 w-56 -translate-y-1/2 text-[#1d1d1f]/[0.06] transition-all duration-700 ${EASE} group-hover:-translate-x-3 group-hover:text-[#1e5631]/[0.14]`}
       />
-      <span className="absolute left-8 top-8 font-mono text-sm tabular-nums text-[#86868b] sm:left-10 sm:top-10">
-        {pad(index + 1)}
-      </span>
       <div className="max-w-sm">
         <h3 className="text-3xl font-bold leading-tight tracking-tight text-[#1d1d1f] sm:text-4xl">{title}</h3>
         <p className="mt-3 text-[17px] leading-relaxed text-[#6e6e73]">{description}</p>
@@ -173,18 +167,17 @@ function WideCard({ service, index }) {
 }
 
 /** 1×1 off-white square: icon top, title anchored to the bottom. */
-function TileCard({ service, index }) {
+function TileCard({ service }) {
   const { title, description, icon: Icon } = service;
   return (
     <article
-      className={`group flex h-full min-h-[220px] flex-col rounded-3xl bg-[#f5f5f7] p-8 transition-colors duration-500 ${EASE} hover:bg-[#ececf0] lg:aspect-square lg:min-h-0`}
+      className={`group flex h-full min-h-[220px] flex-col rounded-3xl bg-[#f5f5f7] p-8 transition-colors duration-500 ${EASE} hover:bg-[#ececf0] lg:aspect-square lg:h-auto lg:min-h-0 lg:w-full`}
     >
       <div className="flex items-start justify-between">
         <Icon
           className={`h-9 w-9 text-[#1e5631] transition-transform duration-500 ${EASE} group-hover:-translate-y-0.5 group-hover:scale-110`}
           strokeWidth={1.5}
         />
-        <span className="font-mono text-sm tabular-nums text-[#86868b]">{pad(index + 1)}</span>
       </div>
       <div className="mt-auto pt-10">
         <h3 className="text-xl font-bold leading-tight tracking-tight text-[#1d1d1f] sm:text-2xl">{title}</h3>
@@ -194,10 +187,10 @@ function TileCard({ service, index }) {
   );
 }
 
-function ServiceCard({ service, index }) {
-  if (service.variant?.startsWith("feature")) return <FeatureCard service={service} index={index} />;
-  if (service.variant === "wide") return <WideCard service={service} index={index} />;
-  return <TileCard service={service} index={index} />;
+function ServiceCard({ service }) {
+  if (service.variant?.startsWith("feature")) return <FeatureCard service={service} />;
+  if (service.variant === "wide") return <WideCard service={service} />;
+  return <TileCard service={service} />;
 }
 
 /* ----------------------------- Section ------------------------------ */
@@ -234,9 +227,9 @@ export default function ServicesSection() {
 
         {/* Bento grid */}
         <div className="mt-16 grid grid-cols-1 gap-4 sm:mt-20 md:grid-cols-2 lg:grid-cols-4 lg:gap-5">
-          {services.map((service, i) => (
+          {services.map((service) => (
             <div key={service.title} className={SPAN[service.variant] || ""}>
-              <ServiceCard service={service} index={i} />
+              <ServiceCard service={service} />
             </div>
           ))}
         </div>

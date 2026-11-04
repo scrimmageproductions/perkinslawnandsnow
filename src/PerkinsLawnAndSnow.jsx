@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
-import HeroSlideshow from "./HeroSlideshow.jsx"; // hero photos are set in HeroSlideshow.jsx
+import HeroSlideshow, { heroSlideshowImages } from "./HeroSlideshow.jsx"; // hero photos are set in HeroSlideshow.jsx
 import ServicesSection from "./ServicesSection.jsx"; // services are set in ServicesSection.jsx
 import {
   Phone,
@@ -43,19 +43,17 @@ const aboutImage = {
 };
 
 
-const galleryImages = [
-  // ← REPLACE / ADD: { src, caption, aspect, position? }
-  // `aspect` sets the tile shape in the masonry grid: "portrait", "square" or "landscape".
-  { src: "/images/fall-cleanup-before-after.jpg", caption: "Fall cleanup, before and after", aspect: "portrait" },
-  { src: "/images/mulch-commercial-shrubs.jpg", caption: "Commercial mulch and shrub care", aspect: "square" },
-  { src: "/images/snow-clearing-lot.avif", caption: "Clearing a snowed-in lot", aspect: "landscape", position: "75% center" },
-  { src: "/images/mulch-parking-lot-island.jpg", caption: "Parking lot island refresh", aspect: "square" },
-  { src: "/images/trimming-edging.avif", caption: "Trimming and edging", aspect: "landscape", position: "60% center" },
-  { src: "/images/mulch-residential-deck.jpg", caption: "Black mulch beds, stone borders", aspect: "portrait" },
-  { src: "/images/pressure-washing-pavers.jpg", caption: "Paver patio pressure wash", aspect: "landscape" },
-  { src: "/images/concrete-walkway-steps.jpg", caption: "Stepped concrete walkway", aspect: "portrait" },
-  { src: "/images/landscape-fabric-planting.jpg", caption: "Planting through weed barrier", aspect: "square" },
-];
+// Gallery shows the same real client photos as the hero slideshow.
+// To add, remove or reorder photos, edit `heroSlideshowImages` in HeroSlideshow.jsx.
+// Portrait photos show uncropped at 3:4. Wide photos (wider than 4:3) span two
+// columns, so 10 portraits + 1 wide fill a clean 4×3 grid on desktop.
+const WIDE_PHOTOS = ["hero-lawn-mowing"]; // ← add a filename here if you add another wide photo
+const galleryImages = heroSlideshowImages.map((img) => ({
+  src: img.src,
+  caption: img.alt,
+  position: img.position,
+  wide: WIDE_PHOTOS.some((name) => img.src.includes(name)),
+}));
 
 const facebookPosts = [
   // ← REPLACE / ADD: copy text and photos from the Facebook page. `src: null` = text-only.
@@ -311,25 +309,31 @@ function About() {
   );
 }
 
-const ASPECTS = { portrait: "aspect-[4/5]", square: "aspect-square", landscape: "aspect-[4/3]" };
-
 function Gallery() {
   return (
     <section id="gallery" className="bg-[#f5f5f7] py-28 sm:py-36">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionIntro eyebrow="Gallery" title="Our work speaks for itself." className="mb-16 sm:mb-20" />
 
-        <div className="columns-1 gap-6 sm:columns-2 lg:columns-3 lg:gap-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {galleryImages.map((img, i) => (
-            <Reveal key={img.src + i} delay={(i % 3) * 100} className="mb-6 break-inside-avoid lg:mb-8">
-              <figure className="group relative overflow-hidden rounded-3xl">
+            <Reveal
+              key={img.src + i}
+              delay={(i % 3) * 100}
+              className={img.wide ? "sm:col-span-2" : ""}
+            >
+              <figure className="group relative h-full overflow-hidden rounded-3xl">
                 <Photo
                   src={img.src}
                   alt={img.caption}
-                  w={800}
+                  w={img.wide ? 1600 : 600}
                   h={800}
                   position={img.position}
-                  className={ASPECTS[img.aspect] || ASPECTS.square}
+                  className={
+                    img.wide
+                      ? "aspect-[4/3] sm:aspect-[2/1] lg:aspect-auto lg:h-full"
+                      : "aspect-[3/4]"
+                  }
                   imgClassName={`transition-transform duration-1000 ${EASE} group-hover:scale-105`}
                 />
                 <figcaption
