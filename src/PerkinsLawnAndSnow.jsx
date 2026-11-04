@@ -78,17 +78,22 @@ const galleryImages = heroSlideshowImages.map((img) => ({
 }));
 
 const facebookPosts = [
-  // ← REPLACE / ADD: copy text and photos from the Facebook page. `src: null` = text-only.
+  // Real posts from the Perkins Facebook page. Each `src` is a local photo in
+  // /public/images. ← REPLACE with any project photo; if the file is missing
+  // the card falls back to /api/placeholder automatically.
   {
-    text: "Another massive driveway cleared and salted before the morning commute! ❄️ We take pride in making sure our Davenport neighbors can get out safely, no matter how much snow drops overnight. Give us a call to get on our route!",
-    src: "/images/snow-clearing-lot.avif", // ← REPLACE
-    alt: "Snow being cleared from a parking lot",
-    position: "75% center",
+    date: "August 26",
+    text: "Photos from a massive tree project we've been working on in between all of our mowing and other projects. We're about. halfway done.",
+    src: "/images/fb-tree-project.jpg", // ← REPLACE
+    alt: "Tracked skid steer with a grapple removing a large tree",
+    position: "center 45%",
   },
   {
-    text: "Spring cleanup in full swing! 🌱 Check out the sharp edges and fresh mulch on this property. We love transforming a winter-weary yard into a pristine outdoor space. Quality work is always our top priority.",
-    src: "/images/mulch-residential-deck.jpg", // ← REPLACE
-    alt: "Fresh black mulch bed beside a deck",
+    date: "April 3",
+    text: "Some before and after pictures of today's job. Black mulch always looks nice.",
+    src: "/images/fb-black-mulch.jpg", // ← REPLACE
+    alt: "Black mulch bed along a downtown sidewalk",
+    position: "center 60%",
   },
 ];
 
@@ -519,7 +524,9 @@ function Reviews() {
                       </span>
                       <div className="leading-tight">
                         <p className="text-sm font-semibold text-[#1d1d1f]">Perkins Lawn and Snow</p>
-                        <p className="text-xs text-[#86868b]">Posted on Facebook</p>
+                        <p className="text-xs text-[#86868b]">
+                          {post.date ? `${post.date} · ` : ""}Posted on Facebook
+                        </p>
                       </div>
                     </div>
                     <p className="mt-4 text-[15px] leading-relaxed text-[#1d1d1f]">{post.text}</p>

@@ -14,7 +14,7 @@ import {
 /* ==================================================================== *
  *  SERVICES — EDIT HERE
  *
- *  Text-and-icon bento grid (no photos). On desktop the grid has
+ *  Icon-and-title bento grid (no photos, no body text). On desktop the grid has
  *  4 columns; each card's `variant` decides its size and material:
  *
  *    "feature-green"    2×2, deep Forest Green, white text
@@ -38,31 +38,25 @@ import {
 const services = [
   {
     title: "Lawn Care & Maintenance",
-    description: "Precision mowing, edging and trimming that keeps your property sharp from the first cut of spring to the last of fall.",
-    tags: ["Weekly mowing", "Edging & trimming", "Seasonal cleanups"],
     icon: Leaf,
     variant: "feature-green",
   },
-  { title: "Mulch Services", description: "Fresh beds. Crisp edges.", icon: Shovel, variant: "tile" },
-  { title: "Fertilization Programs", description: "Thicker, greener turf.", icon: Sprout, variant: "tile" },
-  { title: "Pressure Washing", description: "Years of grime, gone.", icon: Droplets, variant: "tile" },
-  { title: "Junk Removal Services", description: "Hauled away, fast.", icon: Trash2, variant: "tile" },
+  { title: "Mulch Services", icon: Shovel, variant: "tile" },
+  { title: "Fertilization Programs", icon: Sprout, variant: "tile" },
+  { title: "Pressure Washing", icon: Droplets, variant: "tile" },
+  { title: "Junk Removal Services", icon: Trash2, variant: "tile" },
   {
     title: "Concrete Services",
-    description: "Pads, walkways and driveways, poured and finished to last.",
     icon: BrickWall,
     variant: "wide",
   },
   {
     title: "Snow Removal Services",
-    description: "Driveways, sidewalks and commercial lots cleared and salted before the morning commute. All winter long.",
-    tags: ["Plowing", "Shoveling", "Salting"],
     icon: Snowflake,
     variant: "feature-charcoal",
   },
   {
     title: "Aggregate Delivery",
-    description: "Rock, gravel, sand and black dirt, dropped exactly where you need it.",
     icon: Truck,
     variant: "wide",
   },
@@ -87,7 +81,7 @@ const SPAN = {
 
 /** Large 2×2 card on a dark material. Typography is the hero. */
 function FeatureCard({ service }) {
-  const { title, description, tags = [], icon: Icon, variant } = service;
+  const { title, icon: Icon, variant } = service;
   const isGreen = variant === "feature-green";
 
   return (
@@ -128,19 +122,6 @@ function FeatureCard({ service }) {
         <h3 className="max-w-md text-4xl font-bold leading-[1.02] tracking-tight sm:text-5xl xl:text-6xl">
           {title}
         </h3>
-        <p className="mt-5 max-w-md text-lg leading-relaxed text-white/75 lg:mt-4 lg:text-base xl:mt-5 xl:text-lg">{description}</p>
-        {tags.length > 0 && (
-          <ul className="mt-8 flex flex-wrap gap-2 lg:mt-6 xl:mt-8">
-            {tags.map((t) => (
-              <li
-                key={t}
-                className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm"
-              >
-                {t}
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
     </article>
   );
@@ -148,7 +129,7 @@ function FeatureCard({ service }) {
 
 /** 2×1 off-white card: text left, large faint icon anchored right. */
 function WideCard({ service }) {
-  const { title, description, icon: Icon } = service;
+  const { title, icon: Icon } = service;
   return (
     <article
       className={`group relative isolate flex h-full min-h-[220px] items-end overflow-hidden rounded-3xl bg-[#f5f5f7] p-8 transition-colors duration-500 ${EASE} hover:bg-[#ececf0] sm:p-10`}
@@ -160,7 +141,6 @@ function WideCard({ service }) {
       />
       <div className="max-w-sm">
         <h3 className="text-3xl font-bold leading-tight tracking-tight text-[#1d1d1f] sm:text-4xl">{title}</h3>
-        <p className="mt-3 text-[17px] leading-relaxed text-[#6e6e73]">{description}</p>
       </div>
     </article>
   );
@@ -168,7 +148,7 @@ function WideCard({ service }) {
 
 /** 1×1 off-white square: icon top, title anchored to the bottom. */
 function TileCard({ service }) {
-  const { title, description, icon: Icon } = service;
+  const { title, icon: Icon } = service;
   return (
     <article
       className={`group flex h-full min-h-[220px] flex-col rounded-3xl bg-[#f5f5f7] p-8 transition-colors duration-500 ${EASE} hover:bg-[#ececf0] lg:aspect-square lg:h-auto lg:min-h-0 lg:w-full`}
@@ -181,7 +161,6 @@ function TileCard({ service }) {
       </div>
       <div className="mt-auto pt-10">
         <h3 className="text-xl font-bold leading-tight tracking-tight text-[#1d1d1f] sm:text-2xl">{title}</h3>
-        <p className="mt-2 text-[15px] leading-snug text-[#6e6e73]">{description}</p>
       </div>
     </article>
   );
