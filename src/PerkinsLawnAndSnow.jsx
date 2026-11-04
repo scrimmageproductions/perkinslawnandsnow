@@ -1,6 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
+import {
+  animate,
+  motion,
+  useInView,
+  useMotionValue,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import HeroSlideshow, { heroSlideshowImages } from "./HeroSlideshow.jsx"; // hero photos are set in HeroSlideshow.jsx
 import ServicesSection from "./ServicesSection.jsx"; // services are set in ServicesSection.jsx
 import {
@@ -284,6 +292,52 @@ function Header() {
   );
 }
 
+/* "Fresh cut" reveal for the SINCE THE 1980s header: a sharp vertical edge
+ * sweeps left to right (like a mower cutting a clean path), revealing the
+ * text behind it. Pure clip-path + a hairline; no literal grass or icons. */
+const CUT_DURATION = 1.8; // seconds for the edge to cross the text
+const CUT_EASE = [0.65, 0, 0.35, 1]; // smooth start and finish, steady through the middle
+
+function FreshCutReveal({ children, className = "" }) {
+  const ref = useRef(null);
+  const reduceMotion = useReducedMotion();
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+
+  // One progress value (0 → 100) drives both the clip and the cutting edge,
+  // so the edge always sits exactly on the boundary of the revealed text.
+  const progress = useMotionValue(reduceMotion ? 100 : 0);
+  const clipPath = useTransform(progress, (v) => `inset(0% ${100 - v}% 0% 0%)`);
+  const edgeLeft = useTransform(progress, (v) => `${v}%`);
+  // Edge fades in at the start and out once the cut is finished.
+  const edgeOpacity = useTransform(progress, [0, 4, 92, 100], [0, 1, 1, 0]);
+
+  useEffect(() => {
+    if (reduceMotion) {
+      progress.set(100);
+      return;
+    }
+    if (!inView) return;
+    const controls = animate(progress, 100, { duration: CUT_DURATION, ease: CUT_EASE });
+    return () => controls.stop();
+  }, [inView, reduceMotion, progress]);
+
+  return (
+    <div ref={ref} className={`relative w-fit ${className}`}>
+      {/* The text, clipped from the right until the edge passes */}
+      <motion.div style={{ clipPath, WebkitClipPath: clipPath }}>{children}</motion.div>
+
+      {/* The cutting edge: a hairline that travels with the reveal, then fades */}
+      {!reduceMotion && (
+        <motion.span
+          aria-hidden="true"
+          style={{ left: edgeLeft, opacity: edgeOpacity }}
+          className="pointer-events-none absolute -bottom-[6%] -top-[6%] w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-[#1d1d1f]/35 to-transparent"
+        />
+      )}
+    </div>
+  );
+}
+
 // Feathered edges for the frosted backdrop behind the About heading.
 const GLASS_FEATHER = "radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, transparent 100%)";
 
@@ -298,15 +352,17 @@ function About() {
 
   return (
     <section ref={sectionRef} id="about" className="relative overflow-hidden bg-white py-28 sm:py-36">
-      {/* Massive ultra-light background header with scroll-linked parallax */}
+      {/* Massive ultra-light background header: scroll-linked parallax +
+          a left-to-right "fresh cut" reveal when it enters the viewport */}
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <motion.p
-          style={{ y: headerY }}
-          className="pointer-events-none select-none text-[17vw] font-extralight leading-[0.85] tracking-[-0.04em] text-[#1d1d1f]/[0.09] will-change-transform sm:whitespace-nowrap sm:text-[clamp(3.25rem,11vw,10rem)]"
-        >
-          SINCE THE <br className="sm:hidden" />
-          1980s
-        </motion.p>
+        <motion.div style={{ y: headerY }} className="pointer-events-none select-none will-change-transform">
+          <FreshCutReveal>
+            <p className="text-[17vw] font-extralight leading-[0.85] tracking-[-0.04em] text-[#1d1d1f]/[0.09] sm:whitespace-nowrap sm:text-[clamp(3.25rem,11vw,10rem)]">
+              SINCE THE <br className="sm:hidden" />
+              1980s
+            </p>
+          </FreshCutReveal>
+        </motion.div>
       </div>
 
       <div className="relative mx-auto mt-6 grid max-w-7xl gap-14 px-5 sm:-mt-10 sm:px-8 lg:-mt-16 lg:grid-cols-12 lg:gap-10">
