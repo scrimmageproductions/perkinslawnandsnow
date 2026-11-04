@@ -14,11 +14,14 @@ import { Resend } from "resend";
  *  Environment variables (set in .env locally and in Vercel → Project →
  *  Settings → Environment Variables for production):
  *    RESEND_API_KEY   Resend API key (required)
- *    QUOTE_TO_EMAIL   inbox that receives quotes (default below)
+ *    QUOTE_TO_EMAIL   inbox that receives quotes (default: Resend testing address)
  *    QUOTE_FROM_EMAIL sender address (default: Resend's test sender)
  * ==================================================================== */
 
-const TO_EMAIL = process.env.QUOTE_TO_EMAIL || "info@perkinslawnandsnow.com"; // ← placeholder inbox
+// Default inbox: the Resend account's testing address, so the form works while
+// the domain is unverified. Set QUOTE_TO_EMAIL to the real Perkins inbox once
+// perkinslawnandsnow.com is verified in Resend.
+const TO_EMAIL = process.env.QUOTE_TO_EMAIL || "scrimmy@rslini.resend.app";
 const FROM_EMAIL = process.env.QUOTE_FROM_EMAIL || "Perkins Website <onboarding@resend.dev>";
 
 const json = (body, status = 200) =>

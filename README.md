@@ -25,7 +25,7 @@ On the host, set `RESEND_API_KEY` (and `QUOTE_TO_EMAIL`) as environment variable
 The quote form posts to `/api/send-quote` (`api/send-quote.js`), which emails
 the request to the Perkins team through [Resend](https://resend.com).
 
-- **Local:** put `RESEND_API_KEY` (and optionally `QUOTE_TO_EMAIL`) in `.env`
+- **Local:** put `RESEND_API_KEY` (and optionally `QUOTE_TO_EMAIL`, default `scrimmy@rslini.resend.app`) in `.env`
   (see `.env.example`). `npm run dev` serves the API route too.
 - **Production (Vercel):** add the same variables under Project → Settings →
   Environment Variables. Vercel runs `api/send-quote.js` as a serverless function.
