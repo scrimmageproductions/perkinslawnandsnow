@@ -34,6 +34,12 @@ import {
 
 const LOGO_SRC = "/images/perkins-logo.avif"; // official Perkins Lawn & Snow logo — do not restyle
 
+// ← REPLACE: street map of Davenport, IA shown faintly behind the About heading.
+// Any image works (JPG/PNG/SVG/AVIF in /public/images, e.g. "/images/davenport-map.png").
+// It is automatically converted to grayscale and shown at 10% opacity, with
+// soft faded edges, so a full-color map export is fine.
+const davenportMapUrl = "/api/placeholder/800/800";
+
 const aboutImage = {
   src: "/images/perkins-truck-logo.avif", // ← REPLACE: e.g. Jason & Shannon, or the crew
   alt: "Perkins Lawn and Snow work truck",
@@ -274,12 +280,25 @@ function About() {
   return (
     <section id="about" className="bg-white py-28 sm:py-36">
       <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-12 lg:gap-10">
-        <div className="lg:col-span-5 lg:pt-10">
-          <SectionIntro
-            eyebrow="Since the early 1980s"
-            title="About Our Family Business"
-            intro="A Davenport family business, built one yard and one driveway at a time."
+        <div className="relative isolate lg:col-span-5">
+          {/* Hometown texture: faint grayscale Davenport street map behind the heading */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-x-5 -inset-y-10 -z-10 bg-cover bg-center opacity-10 grayscale sm:-inset-x-8 lg:inset-x-0 lg:-inset-y-12"
+            style={{
+              backgroundImage: `url("${davenportMapUrl}")`,
+              // Fade the map out toward its edges so there's no hard rectangle.
+              WebkitMaskImage: "radial-gradient(ellipse 70% 62% at 50% 50%, #000 35%, transparent 100%)",
+              maskImage: "radial-gradient(ellipse 70% 62% at 50% 50%, #000 35%, transparent 100%)",
+            }}
           />
+          <div className="relative z-10 lg:pt-10">
+            <SectionIntro
+              eyebrow="Since the early 1980s"
+              title="About Our Family Business"
+              intro="A Davenport family business, built one yard and one driveway at a time."
+            />
+          </div>
         </div>
 
         <div className="lg:col-span-7">
