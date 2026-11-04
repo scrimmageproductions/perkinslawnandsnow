@@ -57,7 +57,7 @@ Everything else editable sits at the top of `src/PerkinsLawnAndSnow.jsx`:
 | Array | Controls |
 | --- | --- |
 | `aboutImage` | About section photo |
-| `davenportMapUrl` | Faint street map behind the About heading (grayscale, 15% opacity). Currently a temporary Unsplash test image; replace with a real Davenport map before launch |
+| `davenportMapUrl` | Faint street map behind the About heading (grayscale, 15% opacity). File: `public/images/davenport-map.png` |
 | `galleryImages` | Gallery grid. Built automatically from `heroSlideshowImages`, so it always shows the same photos as the hero. Wide photos are listed in `WIDE_PHOTOS` and span two columns |
 | `facebookPosts` | "Recent Updates" cards (`src: null` for text-only) |
 | `googleReviews` | Review quotes |

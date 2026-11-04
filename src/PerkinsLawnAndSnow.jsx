@@ -38,10 +38,7 @@ const LOGO_SRC = "/images/perkins-logo.avif"; // official Perkins Lawn & Snow lo
 // Any image works (JPG/PNG/SVG/AVIF in /public/images, e.g. "/images/davenport-map.png").
 // It is automatically converted to grayscale and shown at 15% opacity, with
 // softly faded edges, so a full-color map export is fine.
-// TEMPORARY test image (generic map photo from Unsplash) so the texture is visible
-// during development. Swap for a real Davenport street map before launch.
-const davenportMapUrl =
-  "https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=800&auto=format&fit=crop";
+const davenportMapUrl = "/images/davenport-map.png";
 
 // Fade only the outer ~18% on each side; the middle of the map stays at full
 // strength. Two linear masks are intersected so all four edges fade evenly.
