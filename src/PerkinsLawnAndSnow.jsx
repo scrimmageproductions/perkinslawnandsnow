@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import emailjs from "@emailjs/browser";
+import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 import HeroSlideshow, { heroSlideshowImages } from "./HeroSlideshow.jsx"; // hero photos are set in HeroSlideshow.jsx
 import ServicesSection from "./ServicesSection.jsx"; // services are set in ServicesSection.jsx
 import {
@@ -283,10 +284,32 @@ function Header() {
   );
 }
 
+// Feathered edges for the frosted backdrop behind the About heading.
+const GLASS_FEATHER = "radial-gradient(ellipse 50% 50% at 50% 50%, #000 55%, transparent 100%)";
+
 function About() {
+  const sectionRef = useRef(null);
+  const reduceMotion = useReducedMotion();
+
+  // Parallax: as the section scrolls through the viewport, the big
+  // "Since the 1980s" header drifts up more slowly than the page around it.
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
+  const headerY = useTransform(scrollYProgress, [0, 1], reduceMotion ? [0, 0] : [-70, 70]);
+
   return (
-    <section id="about" className="bg-white py-28 sm:py-36">
-      <div className="mx-auto grid max-w-7xl gap-14 px-5 sm:px-8 lg:grid-cols-12 lg:gap-10">
+    <section ref={sectionRef} id="about" className="relative overflow-hidden bg-white py-28 sm:py-36">
+      {/* Massive ultra-light background header with scroll-linked parallax */}
+      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+        <motion.p
+          style={{ y: headerY }}
+          className="pointer-events-none select-none text-[17vw] font-extralight leading-[0.85] tracking-[-0.04em] text-[#1d1d1f]/[0.09] will-change-transform sm:whitespace-nowrap sm:text-[clamp(3.25rem,11vw,10rem)]"
+        >
+          SINCE THE <br className="sm:hidden" />
+          1980s
+        </motion.p>
+      </div>
+
+      <div className="relative mx-auto mt-6 grid max-w-7xl gap-14 px-5 sm:-mt-10 sm:px-8 lg:-mt-16 lg:grid-cols-12 lg:gap-10">
         <div className="relative isolate lg:col-span-5">
           {/* Hometown texture: faint grayscale Davenport street map behind the heading */}
           <div
@@ -302,8 +325,14 @@ function About() {
             }}
           />
           <div className="relative z-10 lg:pt-10">
+            {/* Soft frosted backdrop: blurs and lightens the map just behind the
+                text, with feathered edges so there's no visible box. */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -inset-x-10 -inset-y-12 -z-10 bg-white/70 backdrop-blur-[3px] sm:-inset-x-14 sm:-inset-y-14"
+              style={{ WebkitMaskImage: GLASS_FEATHER, maskImage: GLASS_FEATHER }}
+            />
             <SectionIntro
-              eyebrow="Since the early 1980s"
               title="About Our Family Business"
               intro="A Davenport family business, built one yard and one driveway at a time."
             />
