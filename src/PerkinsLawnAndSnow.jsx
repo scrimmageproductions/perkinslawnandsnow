@@ -743,7 +743,7 @@ function Footer() {
   return (
     <footer className="bg-white">
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center justify-between gap-5 border-t border-black/5 px-5 py-10 sm:flex-row sm:px-8">
-        <p className="text-sm text-[#86868b]">&copy; 2023 Perkins Lawn and Snow-All Rights Reserved</p>
+        <p className="text-sm text-[#86868b]">&copy; 2026 Perkins Lawn and Snow-All Rights Reserved</p>
         <a
           href={FACEBOOK_URL}
           target="_blank"
